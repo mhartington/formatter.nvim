@@ -32,25 +32,29 @@ To config a tool, you can create a table for the filetype and tool you want to u
 ```lua
 require('format').setup({
   javascript = {
-      prettier = {
-        exe = "prettier",
-        args = {"--stdin-filepath", vim.fn.expand("%:p"), "--single-quote"},
-        stdin = true
-      }
+      prettier = function()
+        returns {
+          exe = "prettier",
+          args = {"--stdin-filepath", vim.api.nvim_buf_get_name(0), '--single-quote'},
+          stdin = true
+        }
+      end
   },
   lua = {
-      luafmt = {
-        exe = "luafmt",
-        args = {"--indent-count", 2, "--stdin"},
-        stdin = true
-      }
+      luafmt = function()
+        return {
+          exe = "luafmt",
+          args = {"--indent-count", 2, "--stdin"},
+          stdin = true
+        }
+      end
     }
 })
 ```
 
-Each format tool table must contain the following
+Each format tool config is a function that returns a table.
+The main keys to have are:
 
-- `exe`:  the program you wish to run
-- `args`:  a table of args to pass
+- `exe`: the program you wish to run
+- `args`: a table of args to pass
 - `stdin`: If it should use stdin or not. As of now, only stdin tools are supported. But will add support for reading files.
-

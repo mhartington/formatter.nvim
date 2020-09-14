@@ -41,12 +41,12 @@ function internalFormatter(userFmtTable, startLine, endLine)
 end
 
 function startTask(name, config, startLine, endLine)
+  o = config()
   bufnr = api.nvim_get_current_buf()
   lines = util.getLines(bufnr, startLine, endLine)
-
-  cmd = config.exe
-  args = table.concat(config.args, " ")
-  stdin = config.stdin or false
+  cmd = o.exe
+  args = table.concat(o.args, " ")
+  stdin = o.stdin or false
 
   if (stdin == true) then
     output = runner.createJob(cmd, args, lines)
