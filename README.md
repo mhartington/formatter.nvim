@@ -19,7 +19,7 @@ call dein#add('mhartington/formatter.nvim')
 " configure the plugin
 
 lua require('format').setup()
-
+" Provided by setup function
 nnoremap <silent> <leader>f :Format<CR>
 ```
 
@@ -30,7 +30,6 @@ By default there are no tools configured. This may change.
 To config a tool, you can create a table for the filetype and tool you want to use
 
 ```lua
-
 require('format').setup({
   javascript = {
       prettier = {
