@@ -5,6 +5,8 @@ local runner = require("format.runner")
 local util = require("format.util")
 local formatter = {
   format = function(args, startLine, endLine)
+    startLine = startLine or 1
+    endLine = endLine or 0
     -- table of user passed formatters to run, if any
     userPassedFmtr = nil
     if not util.isEmpty(args) then

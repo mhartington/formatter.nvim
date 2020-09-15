@@ -9,17 +9,20 @@ local util = {
     vim.api.nvim_error_write(table.concat(vim.tbl_flatten {...}) .. "\n")
   end,
   setLines = function(bufnr, startLine, endLine, lines)
-    startLine = startLine - 1 or 0
-    endLine = endLine or -1
-    return vim.api.nvim_buf_set_lines(bufnr, startLine, endLine, true, lines)
+    return vim.api.nvim_buf_set_lines(bufnr, startLine-1, endLine, true, lines)
   end,
   getLines = function(bufnr, startLine, endLine)
-    startLine = startLine - 1 or 0
-    endLine = endLine or -1
-    return vim.api.nvim_buf_get_lines(bufnr, startLine, endLine, true)
+    return vim.api.nvim_buf_get_lines(bufnr, startLine-1, endLine, true)
   end,
   isEmpty = function(s)
     return s == nil or s == ""
+  end,
+  Set = function(list)
+    local set = {}
+    for _, l in ipairs(list) do
+      set[l] = true
+    end
+    return set
   end
 }
 return util
