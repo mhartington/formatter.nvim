@@ -5,8 +5,8 @@ local runner = require("format.runner")
 local util = require("format.util")
 local formatter = {
   format = function(args, startLine, endLine)
-    startLine = startLine or 1
-    endLine = endLine or 0
+    if(startLine ~= nil) then s = startLine -1 else s=0 end
+    e = endLine or -1
     -- table of user passed formatters to run, if any
     userPassedFmtr = nil
     if not util.isEmpty(args) then
@@ -15,7 +15,7 @@ local formatter = {
     view = vim.fn.winsaveview()
 
     -- Format stuff
-    internalFormatter(userPassedFmtr, startLine, endLine)
+    internalFormatter(userPassedFmtr, s, e)
     vim.fn.winrestview(view)
   end
 }
