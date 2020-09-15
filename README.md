@@ -33,7 +33,7 @@ To config a tool, you can create a table for the filetype and tool you want to u
 require('format').setup({
   javascript = {
       prettier = function()
-        returns {
+        return {
           exe = "prettier",
           args = {"--stdin-filepath", vim.api.nvim_buf_get_name(0), '--single-quote'},
           stdin = true
