@@ -3,26 +3,31 @@ local api = vim.api
 local config = require("format.config")
 local runner = require("format.runner")
 local util = require("format.util")
-local formatter = {
-  format = function(args, startLine, endLine)
-    if(startLine ~= nil) then s = startLine -1 else s=0 end
-    e = endLine or -1
-    -- table of user passed formatters to run, if any
-    userPassedFmtr = nil
-    if not util.isEmpty(args) then
-      userPassedFmtr = vim.split(args, " ")
-    end
-    view = vim.fn.winsaveview()
+local formatter = {}
 
-    -- Format stuff
-    internalFormatter(userPassedFmtr, s, e)
-    vim.fn.winrestview(view)
+function formatter.format(args, startLine, endLine)
+  local s
+  local e
+  if (startLine ~= nil) then
+    s = startLine - 1
+  else
+    s = 0
   end
-}
+  e = endLine or -1
+  -- table of user passed formatters to run, if any
+  local userPassedFmtr = nil
+  if not util.isEmpty(args) then
+    userPassedFmtr = vim.split(args, " ")
+  end
+  local view = vim.fn.winsaveview()
 
-function internalFormatter(userFmtTable, startLine, endLine)
-  filetype = vim.fn.eval("&filetype")
-  formatters = config.values[filetype]
+  -- Format stuff
+  formatter.internalFormatter(userPassedFmtr, s, e)
+  vim.fn.winrestview(view)
+end
+function formatter.internalFormatter(userFmtTable, startLine, endLine)
+  local filetype = vim.fn.eval("&filetype")
+  local formatters = config.values[filetype]
   -- No formatters defined for the given file type
   if (util.isEmpty(formatters)) then
     print(string.format("Format: no formatter defined for %s files", filetype))
@@ -32,26 +37,25 @@ function internalFormatter(userFmtTable, startLine, endLine)
   if not util.isEmpty(userFmtTable) then
     for _, userFmt in ipairs(userFmtTable) do
       if not util.isEmpty(formatters[userFmt]) then
-        startTask(userFmt, formatters[userFmt], startLine, endLine)
+        formatter.startTask(userFmt, formatters[userFmt], startLine, endLine)
       end
     end
   else
-    for fmt, config in pairs(formatters) do
-      startTask(fmt, config, startLine, endLine)
+    for fmt, conf in pairs(formatters) do
+      formatter.startTask(fmt, conf, startLine, endLine)
     end
   end
 end
-
-function startTask(name, config, startLine, endLine)
-  o = config()
-  bufnr = api.nvim_get_current_buf()
-  lines = util.getLines(bufnr, startLine, endLine)
-  cmd = o.exe
-  args = table.concat(o.args, " ")
-  stdin = o.stdin or false
+function formatter.startTask(name, conf, startLine, endLine)
+  local o = conf()
+  local bufnr = api.nvim_get_current_buf()
+  local lines = util.getLines(bufnr, startLine, endLine)
+  local cmd = o.exe
+  local args = table.concat(o.args, " ")
+  local stdin = o.stdin or false
 
   if (stdin == true) then
-    output = runner.createJob(cmd, args, lines)
+    local output = runner.createJob(cmd, args, lines)
     if (api.nvim_get_vvar("shell_error") == 0) then
       util.setLines(bufnr, startLine, endLine, output)
       util.log(string.format("Format: finished running %s", name))
