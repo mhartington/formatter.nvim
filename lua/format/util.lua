@@ -3,6 +3,9 @@ local util = {}
 function util.log(...)
   vim.api.nvim_out_write(table.concat(vim.tbl_flatten {...}) .. "\n")
 end
+function util.inspect(val)
+  print(vim.inspect(val))
+end
 function util.error(...)
   print(table.concat(...))
   vim.api.nvim_error_write(table.concat(vim.tbl_flatten {...}) .. "\n")
