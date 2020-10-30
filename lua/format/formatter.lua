@@ -1,94 +1,121 @@
 local vim = vim
 local api = vim.api
 local config = require "format.config"
-local runner = require "format.runner"
 local util = require "format.util"
-local formatter = {}
 
-function formatter.format(args, startLine, endLine)
-  local s
-  local e
+local M = {}
+
+function M.getRange(startLine, endLine)
+  local starting
+  local ending
   if startLine ~= nil then
-    s = startLine - 1
+    starting = startLine - 1
   else
-    s = 0
+    starting = 0
   end
-  e = endLine or -1
-  -- table of user passed formatters to run, if any
-  local userPassedFmtr = nil
-  if not util.isEmpty(args) then
-    userPassedFmtr = vim.split(args, " ")
-  end
+  ending = endLine or -1
+  return starting, ending
+end
+
+function M.format(args, startLine, endLine)
+  local starting, ending = M.getRange(startLine, endLine)
+  local userPassedFmtr = util.split(args, " ")
   local view = vim.fn.winsaveview()
-  -- Format stuff
-  formatter.internalFormatter(userPassedFmtr, s, e)
+  M.internalFormatter(userPassedFmtr, starting, ending)
   vim.fn.winrestview(view)
 end
 
-function formatter.internalFormatter(userPassedFmt, startLine, endLine)
+function M.internalFormatter(userPassedFmt, startLine, endLine)
   local filetype = vim.fn.eval "&filetype"
   local formatters = config.values[filetype]
+
   -- No formatters defined for the given file type
   if util.isEmpty(formatters) then
     print(string.format("Format: no formatter defined for %s files", filetype))
     return
   end
 
-  -- User passed a formatter as an arg
-  -- Only run this one formatter if it's valid
-  if not util.isEmpty(userPassedFmt) then
-    for _, userFmt in ipairs(userPassedFmt) do
-      if not util.isEmpty(formatters[userFmt]) then
-        formatter.startTask(userFmt, formatters[userFmt], startLine, endLine)
-      end
-    end
+  local fmtsToRun = {}
+
+  if userPassedFmt == nil then
+    fmtsToRun = formatters
   else
-    print(type(formatters))
-    -- User did not pass an arg, run them all
-    for fmt, conf in pairs(formatters)
-    do
-      formatter.startTask(fmt, conf, startLine, endLine)
+    for name, conf in pairs(formatters) do
+      if userPassedFmt[name] then
+        fmtsToRun[name] = conf
+      end
     end
   end
+
+  local confTmp = {}
+  for _, conf in pairs(fmtsToRun) do
+    table.insert(confTmp, conf)
+  end
+  M.startTask(confTmp, startLine, endLine)
 end
 
-function formatter.startTask(name, conf, startLine, endLine)
+function M.startTask(confs, startLine, endLine)
+
+  local F = {}
+
+  F.output = ""
+  F.err = ""
+
+  function F.on_event(_, data, event)
+    if event == "stdout" then
+      if data then
+        F.output = data
+      end
+    end
+    if event == "stderr" then
+      if data then
+        F.err = data
+      end
+    end
+    if event == "exit" then
+      util.setLines(F.bufnr, startLine, endLine, F.output)
+      util.log(string.format("Format: finished running %s", F.exe))
+      F.step()
+    end
+  end
+
+  function F.run(conf)
     local o = conf()
-    local bufnr = api.nvim_get_current_buf()
-    local lines = util.getLines(bufnr, startLine, endLine)
-    local exe = o.exe
-    local exe_args = table.concat(o.args, " ")
-    local stdin = o.stdin or false
-    local output = nil
+    F.exe = o.exe
+    F.args = table.concat(o.args, " ")
+    F.bufnr = api.nvim_get_current_buf()
+    F.lines = util.getLines(F.bufnr, startLine, endLine)
+    local cmd_str = string.format("%s %s", F.exe, F.args)
+    local job_id =
+      vim.fn.jobstart(
+      cmd_str,
+      {
+        on_stderr = F.on_event,
+        on_stdout = F.on_event,
+        on_exit = F.on_event,
+        stdout_buffered = true,
+        stderr_buffered = true
+      }
+    )
+    vim.fn.chansend(job_id, F.lines)
+    vim.fn.chanclose(job_id, "stdin")
+  end
 
-    local function onStderr(_, data, _)
-      if data then
-        util.log(string.format("Format: failed to run %s", name))
-      end
+  -- Process through each config
+  -- Built in For Loops + vim/libuv
+  -- do not play well together
+  function F.step()
+    if #confs == 0 then
+      return
     end
-    local function onStdout(_, data, _)
-      if data then
-        output = data
-      end
-    end
-    local function onExit()
-      util.setLines(bufnr, startLine, endLine, output)
-      util.log(string.format("Format: finished running %s", name))
-    end
-    if stdin == true then
-      local job = runner:new({
-          cmd = exe,
-          args = exe_args,
-          on_stdout = onStdout,
-          on_stderr = onStderr,
-          on_exit = onExit
-        })
-      job.send(lines)
+    local current = table.remove(confs, 1)
+    F.run(current)
+  end
 
-    else
-      print "todo: handle non-stdin"
-    end
+  -- ANND start the loop
+  F.step()
 
 end
 
-return formatter
+return M
+
