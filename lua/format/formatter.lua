@@ -21,14 +21,20 @@ function M.format(bang, args, startLine, endLine)
   local configsToRun = {}
   for name, config in pairs(formatters) do
     if userPassedFmt == nil or userPassedFmt[name] then
-      table.insert(configsToRun, config)
+      table.insert(
+        configsToRun,
+        {
+          config = config(),
+          name = name
+        }
+      )
     end
   end
 
   M.startTask(configsToRun, startLine, endLine, force)
 end
 
-function M.startTask(confs, startLine, endLine, force)
+function M.startTask(configs, startLine, endLine, force)
   local F = {}
   F.err = ""
   F.bufnr = api.nvim_get_current_buf()
@@ -46,15 +52,15 @@ function M.startTask(confs, startLine, endLine, force)
       end
     end
     if event == "exit" then
-      util.log(string.format("Format: finished running %s", F.exe))
+      util.log(string.format("Format: finished running %s", F.name))
       F.step()
     end
   end
 
-  function F.run(conf)
-    local o = conf()
-    F.exe = o.exe
-    F.args = table.concat(o.args, " ")
+  function F.run(current)
+    F.exe = current.config.exe
+    F.args = table.concat(current.config.args, " ")
+    F.name = current.name
     local cmd_str = string.format("%s %s", F.exe, F.args)
     local job_id =
       vim.fn.jobstart(
@@ -75,7 +81,7 @@ function M.startTask(confs, startLine, endLine, force)
   -- Built in For Loops + vim/libuv
   -- do not play well together
   function F.step()
-    if #confs == 0 then
+    if #configs == 0 then
       if not api.nvim_buf_get_option(F.bufnr, "modified") or force then
         local view = vim.fn.winsaveview()
         util.setLines(F.bufnr, startLine, endLine, F.output)
@@ -83,8 +89,7 @@ function M.startTask(confs, startLine, endLine, force)
       end
       return
     end
-    local current = table.remove(confs, 1)
-    F.run(current)
+    F.run(table.remove(configs, 1))
   end
 
   -- ANND start the loop
