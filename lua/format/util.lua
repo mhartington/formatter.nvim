@@ -23,6 +23,14 @@ function util.getLines(bufnr, startLine, endLine)
 end
 
 function util.isEmpty(s)
+  if type(s) == "table" then
+    for k, v in pairs(s) do
+      if not util.isEmpty(v) then
+        return false
+      end
+    end
+    return true
+  end
   return s == nil or s == ""
 end
 

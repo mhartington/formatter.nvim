@@ -36,32 +36,36 @@ end
 
 function M.startTask(configs, startLine, endLine, force)
   local F = {}
-  F.err = ""
-  F.bufnr = api.nvim_get_current_buf()
-  F.output = util.getLines(F.bufnr, startLine, endLine)
+  local bufnr = api.nvim_get_current_buf()
+  local output = util.getLines(bufnr, startLine, endLine)
+  local name
 
+  local currentOutput
   function F.on_event(_, data, event)
     if event == "stdout" then
-      if data then
-        F.output = data
+      if not util.isEmpty(data) then
+        currentOutput = data
       end
     end
     if event == "stderr" then
-      if data then
-        F.err = data
+      if not util.isEmpty(data) then
+        util.log(string.format("Format: error running %s, %s", name, vim.inspect(data)))
       end
     end
     if event == "exit" then
-      util.log(string.format("Format: finished running %s", F.name))
+      if data == 0 then
+        util.log(string.format("Format: finished running %s", name))
+        output = currentOutput
+      end
       F.step()
     end
   end
 
   function F.run(current)
-    F.exe = current.config.exe
-    F.args = table.concat(current.config.args, " ")
-    F.name = current.name
-    local cmd_str = string.format("%s %s", F.exe, F.args)
+    name = current.name
+    local exe = current.config.exe
+    local args = table.concat(current.config.args, " ")
+    local cmd_str = string.format("%s %s", exe, args)
     local job_id =
       vim.fn.jobstart(
       cmd_str,
@@ -73,7 +77,7 @@ function M.startTask(configs, startLine, endLine, force)
         stderr_buffered = true
       }
     )
-    vim.fn.chansend(job_id, F.output)
+    vim.fn.chansend(job_id, output)
     vim.fn.chanclose(job_id, "stdin")
   end
 
@@ -82,9 +86,9 @@ function M.startTask(configs, startLine, endLine, force)
   -- do not play well together
   function F.step()
     if #configs == 0 then
-      if not api.nvim_buf_get_option(F.bufnr, "modified") or force then
+      if not api.nvim_buf_get_option(bufnr, "modified") or force then
         local view = vim.fn.winsaveview()
-        util.setLines(F.bufnr, startLine, endLine, F.output)
+        util.setLines(bufnr, startLine, endLine, output)
         vim.fn.winrestview(view)
       end
       return
