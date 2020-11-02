@@ -5,61 +5,34 @@ local util = require "format.util"
 
 local M = {}
 
-function M.getRange(startLine, endLine)
-  local starting
-  local ending
-  if startLine ~= nil then
-    starting = startLine - 1
-  else
-    starting = 0
-  end
-  ending = endLine or -1
-  return starting, ending
-end
-
-function M.format(args, startLine, endLine)
-  local starting, ending = M.getRange(startLine, endLine)
-  local userPassedFmtr = util.split(args, " ")
-  local view = vim.fn.winsaveview()
-  M.internalFormatter(userPassedFmtr, starting, ending)
-  vim.fn.winrestview(view)
-end
-
-function M.internalFormatter(userPassedFmt, startLine, endLine)
-  local filetype = vim.fn.eval "&filetype"
+function M.format(bang, args, startLine, endLine)
+  startLine = startLine - 1
+  local force = bang == "!"
+  local userPassedFmt = util.split(args, " ")
+  local filetype = vim.fn.eval("&filetype")
   local formatters = config.values[filetype]
 
   -- No formatters defined for the given file type
   if util.isEmpty(formatters) then
-    print(string.format("Format: no formatter defined for %s files", filetype))
+    util.log(string.format("Format: no formatter defined for %s files", filetype))
     return
   end
 
-  local fmtsToRun = {}
-
-  if userPassedFmt == nil then
-    fmtsToRun = formatters
-  else
-    for name, conf in pairs(formatters) do
-      if userPassedFmt[name] then
-        fmtsToRun[name] = conf
-      end
+  local configsToRun = {}
+  for name, config in pairs(formatters) do
+    if userPassedFmt == nil or userPassedFmt[name] then
+      table.insert(configsToRun, config)
     end
   end
 
-  local confTmp = {}
-  for _, conf in pairs(fmtsToRun) do
-    table.insert(confTmp, conf)
-  end
-  M.startTask(confTmp, startLine, endLine)
+  M.startTask(configsToRun, startLine, endLine, force)
 end
 
-function M.startTask(confs, startLine, endLine)
-
+function M.startTask(confs, startLine, endLine, force)
   local F = {}
-
-  F.output = ""
   F.err = ""
+  F.bufnr = api.nvim_get_current_buf()
+  F.output = util.getLines(F.bufnr, startLine, endLine)
 
   function F.on_event(_, data, event)
     if event == "stdout" then
@@ -73,7 +46,6 @@ function M.startTask(confs, startLine, endLine)
       end
     end
     if event == "exit" then
-      util.setLines(F.bufnr, startLine, endLine, F.output)
       util.log(string.format("Format: finished running %s", F.exe))
       F.step()
     end
@@ -83,8 +55,6 @@ function M.startTask(confs, startLine, endLine)
     local o = conf()
     F.exe = o.exe
     F.args = table.concat(o.args, " ")
-    F.bufnr = api.nvim_get_current_buf()
-    F.lines = util.getLines(F.bufnr, startLine, endLine)
     local cmd_str = string.format("%s %s", F.exe, F.args)
     local job_id =
       vim.fn.jobstart(
@@ -97,7 +67,7 @@ function M.startTask(confs, startLine, endLine)
         stderr_buffered = true
       }
     )
-    vim.fn.chansend(job_id, F.lines)
+    vim.fn.chansend(job_id, F.output)
     vim.fn.chanclose(job_id, "stdin")
   end
 
@@ -106,6 +76,11 @@ function M.startTask(confs, startLine, endLine)
   -- do not play well together
   function F.step()
     if #confs == 0 then
+      if not api.nvim_buf_get_option(F.bufnr, "modified") or force then
+        local view = vim.fn.winsaveview()
+        util.setLines(F.bufnr, startLine, endLine, F.output)
+        vim.fn.winrestview(view)
+      end
       return
     end
     local current = table.remove(confs, 1)
@@ -114,8 +89,6 @@ function M.startTask(confs, startLine, endLine)
 
   -- ANND start the loop
   F.step()
-
 end
 
 return M
-
