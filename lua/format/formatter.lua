@@ -5,7 +5,7 @@ local util = require "format.util"
 
 local M = {}
 
-function M.format(bang, args, startLine, endLine)
+function M.format(bang, args, startLine, endLine, write)
   startLine = startLine - 1
   local force = bang == "!"
   local userPassedFmt = util.split(args, " ")
@@ -31,10 +31,10 @@ function M.format(bang, args, startLine, endLine)
     end
   end
 
-  M.startTask(configsToRun, startLine, endLine, force)
+  M.startTask(configsToRun, startLine, endLine, force, write)
 end
 
-function M.startTask(configs, startLine, endLine, force)
+function M.startTask(configs, startLine, endLine, force, write)
   local F = {}
   local bufnr = api.nvim_get_current_buf()
   local input = util.getLines(bufnr, startLine, endLine)
@@ -91,13 +91,18 @@ function M.startTask(configs, startLine, endLine, force)
         local view = vim.fn.winsaveview()
         util.setLines(bufnr, startLine, endLine, output)
         vim.fn.winrestview(view)
+        if write and bufnr == api.nvim_get_current_buf() then
+          vim.api.nvim_command("noautocmd :update")
+        end
       end
+      vim.api.nvim_command("silent doautocmd <nomodeline> User FormatterPost")
       return
     end
     F.run(table.remove(configs, 1))
   end
 
   -- ANND start the loop
+  vim.api.nvim_command("silent doautocmd <nomodeline> User FormatterPre")
   F.step()
 end
 
