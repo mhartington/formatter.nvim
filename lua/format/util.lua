@@ -44,4 +44,20 @@ function util.split(s, sep, plain)
   end
 end
 
+function util.isSame(a, b)
+  if type(a) ~= type(b) then
+    return false
+  end
+  if type(a) == "table" then
+    for k, v in pairs(a) do
+      if not util.isSame(b[k], v) then
+        return false
+      end
+    end
+    return true
+  else
+    return a == b
+  end
+end
+
 return util

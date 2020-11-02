@@ -37,7 +37,8 @@ end
 function M.startTask(configs, startLine, endLine, force)
   local F = {}
   local bufnr = api.nvim_get_current_buf()
-  local output = util.getLines(bufnr, startLine, endLine)
+  local input = util.getLines(bufnr, startLine, endLine)
+  local output = input
   local name
 
   local currentOutput
@@ -86,7 +87,7 @@ function M.startTask(configs, startLine, endLine, force)
   -- do not play well together
   function F.step()
     if #configs == 0 then
-      if not api.nvim_buf_get_option(bufnr, "modified") or force then
+      if (not api.nvim_buf_get_option(bufnr, "modified") or force) and not util.isSame(input, output) then
         local view = vim.fn.winsaveview()
         util.setLines(bufnr, startLine, endLine, output)
         vim.fn.winrestview(view)
