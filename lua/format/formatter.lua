@@ -44,11 +44,13 @@ function M.startTask(configs, startLine, endLine, force, write)
   local currentOutput
   function F.on_event(_, data, event)
     if event == "stdout" then
+      data[#data] = nil
       if not util.isEmpty(data) then
         currentOutput = data
       end
     end
     if event == "stderr" then
+      data[#data] = nil
       if not util.isEmpty(data) then
         util.log(string.format("Format: error running %s, %s", name, vim.inspect(data)))
       end

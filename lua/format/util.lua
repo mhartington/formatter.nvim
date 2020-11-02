@@ -49,6 +49,9 @@ function util.isSame(a, b)
     return false
   end
   if type(a) == "table" then
+    if #a ~= #b then
+      return false
+    end
     for k, v in pairs(a) do
       if not util.isSame(b[k], v) then
         return false
