@@ -5,87 +5,74 @@ local util = require "format.util"
 
 local M = {}
 
-function M.getRange(startLine, endLine)
-  local starting
-  local ending
-  if startLine ~= nil then
-    starting = startLine - 1
-  else
-    starting = 0
-  end
-  ending = endLine or -1
-  return starting, ending
-end
-
-function M.format(args, startLine, endLine)
-  local starting, ending = M.getRange(startLine, endLine)
-  local userPassedFmtr = util.split(args, " ")
-  local view = vim.fn.winsaveview()
-  M.internalFormatter(userPassedFmtr, starting, ending)
-  vim.fn.winrestview(view)
-end
-
-function M.internalFormatter(userPassedFmt, startLine, endLine)
-  local filetype = vim.fn.eval "&filetype"
+function M.format(bang, args, startLine, endLine, write)
+  startLine = startLine - 1
+  local force = bang == "!"
+  local userPassedFmt = util.split(args, " ")
+  local filetype = vim.fn.eval("&filetype")
   local formatters = config.values[filetype]
 
   -- No formatters defined for the given file type
   if util.isEmpty(formatters) then
-    print(string.format("Format: no formatter defined for %s files", filetype))
+    util.log(string.format("Format: no formatter defined for %s files", filetype))
     return
   end
 
-  local fmtsToRun = {}
-
-  if userPassedFmt == nil then
-    fmtsToRun = formatters
-  else
-    for name, conf in pairs(formatters) do
-      if userPassedFmt[name] then
-        fmtsToRun[name] = conf
-      end
+  local configsToRun = {}
+  for name, config in pairs(formatters) do
+    if userPassedFmt == nil or userPassedFmt[name] then
+      table.insert(
+        configsToRun,
+        {
+          config = config(),
+          name = name
+        }
+      )
     end
   end
 
-  local confTmp = {}
-  for _, conf in pairs(fmtsToRun) do
-    table.insert(confTmp, conf)
-  end
-  M.startTask(confTmp, startLine, endLine)
+  M.startTask(configsToRun, startLine, endLine, force, write)
 end
 
-function M.startTask(confs, startLine, endLine)
-
+function M.startTask(configs, startLine, endLine, force, write)
   local F = {}
+  local bufnr = api.nvim_get_current_buf()
+  local input = util.getLines(bufnr, startLine, endLine)
+  local output = input
+  local name
 
-  F.output = ""
-  F.err = ""
-
+  local currentOutput
   function F.on_event(_, data, event)
     if event == "stdout" then
-      if data then
-        F.output = data
+      if data[#data] == "" then
+        data[#data] = nil
+      end
+      if not util.isEmpty(data) then
+        currentOutput = data
       end
     end
     if event == "stderr" then
-      if data then
-        F.err = data
+      if data[#data] == "" then
+        data[#data] = nil
+      end
+      if not util.isEmpty(data) then
+        util.log(string.format("Format: error running %s, %s", name, vim.inspect(data)))
       end
     end
     if event == "exit" then
-      util.setLines(F.bufnr, startLine, endLine, F.output)
-      util.log(string.format("Format: finished running %s", F.exe))
+      if data == 0 then
+        util.log(string.format("Format: finished running %s", name))
+        output = currentOutput
+      end
       F.step()
     end
   end
 
-  function F.run(conf)
-    local o = conf()
-    F.exe = o.exe
-    F.args = table.concat(o.args, " ")
-    F.bufnr = api.nvim_get_current_buf()
-    F.lines = util.getLines(F.bufnr, startLine, endLine)
-    local cmd_str = string.format("%s %s", F.exe, F.args)
+  function F.run(current)
+    name = current.name
+    local exe = current.config.exe
+    local args = table.concat(current.config.args, " ")
+    local cmd_str = string.format("%s %s", exe, args)
     local job_id =
       vim.fn.jobstart(
       cmd_str,
@@ -97,7 +84,7 @@ function M.startTask(confs, startLine, endLine)
         stderr_buffered = true
       }
     )
-    vim.fn.chansend(job_id, F.lines)
+    vim.fn.chansend(job_id, output)
     vim.fn.chanclose(job_id, "stdin")
   end
 
@@ -105,17 +92,24 @@ function M.startTask(confs, startLine, endLine)
   -- Built in For Loops + vim/libuv
   -- do not play well together
   function F.step()
-    if #confs == 0 then
+    if #configs == 0 then
+      if (not api.nvim_buf_get_option(bufnr, "modified") or force) and not util.isSame(input, output) then
+        local view = vim.fn.winsaveview()
+        util.setLines(bufnr, startLine, endLine, output)
+        vim.fn.winrestview(view)
+        if write and bufnr == api.nvim_get_current_buf() then
+          vim.api.nvim_command("noautocmd :update")
+        end
+      end
+      vim.api.nvim_command("silent doautocmd <nomodeline> User FormatterPost")
       return
     end
-    local current = table.remove(confs, 1)
-    F.run(current)
+    F.run(table.remove(configs, 1))
   end
 
   -- ANND start the loop
+  vim.api.nvim_command("silent doautocmd <nomodeline> User FormatterPre")
   F.step()
-
 end
 
 return M
-
