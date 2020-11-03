@@ -18,7 +18,7 @@ call dein#add('mhartington/formatter.nvim')
 
 " configure the plugin
 
-lua require('format').setup()
+lua require('format').setup(...)
 " Provided by setup function
 nnoremap <silent> <leader>f :Format<CR>
 ```

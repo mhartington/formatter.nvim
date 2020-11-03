@@ -63,4 +63,8 @@ function util.isSame(a, b)
   end
 end
 
+function util.fireEvent(event)
+  local cmd = string.format('silent doautocmd <nomodeline> User %s', event)
+  vim.api.nvim_command(cmd)
+end
 return util

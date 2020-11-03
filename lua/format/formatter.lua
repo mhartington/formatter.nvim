@@ -8,6 +8,7 @@ local M = {}
 function M.format(bang, args, startLine, endLine, write)
   startLine = startLine - 1
   local force = bang == "!"
+
   local userPassedFmt = util.split(args, " ")
   local filetype = vim.fn.eval("&filetype")
   local formatters = config.values[filetype]
@@ -19,18 +20,11 @@ function M.format(bang, args, startLine, endLine, write)
   end
 
   local configsToRun = {}
-  for name, config in pairs(formatters) do
+  for name, fmtConfig in pairs(formatters) do
     if userPassedFmt == nil or userPassedFmt[name] then
-      table.insert(
-        configsToRun,
-        {
-          config = config(),
-          name = name
-        }
-      )
+      table.insert(configsToRun, {config = fmtConfig(), name = name})
     end
   end
-
   M.startTask(configsToRun, startLine, endLine, force, write)
 end
 
@@ -39,9 +33,10 @@ function M.startTask(configs, startLine, endLine, force, write)
   local bufnr = api.nvim_get_current_buf()
   local input = util.getLines(bufnr, startLine, endLine)
   local output = input
-  local name
 
+  local name
   local currentOutput
+
   function F.on_event(_, data, event)
     if event == "stdout" then
       if data[#data] == "" then
@@ -97,18 +92,20 @@ function M.startTask(configs, startLine, endLine, force, write)
         local view = vim.fn.winsaveview()
         util.setLines(bufnr, startLine, endLine, output)
         vim.fn.winrestview(view)
+
         if write and bufnr == api.nvim_get_current_buf() then
           vim.api.nvim_command("noautocmd :update")
         end
       end
-      vim.api.nvim_command("silent doautocmd <nomodeline> User FormatterPost")
+
+      util.fireEvent("FormatterPost")
       return
     end
     F.run(table.remove(configs, 1))
   end
 
-  -- ANND start the loop
-  vim.api.nvim_command("silent doautocmd <nomodeline> User FormatterPre")
+  -- AND start the loop
+  util.fireEvent("FormatterPre")
   F.step()
 end
 
