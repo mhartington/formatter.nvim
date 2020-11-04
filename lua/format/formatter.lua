@@ -8,14 +8,19 @@ local M = {}
 function M.format(bang, args, startLine, endLine, write)
   startLine = startLine - 1
   local force = bang == "!"
-
   local userPassedFmt = util.split(args, " ")
+  local modifiable = vim.fn.eval("&filetype")
   local filetype = vim.fn.eval("&filetype")
   local formatters = config.values[filetype]
 
+  if not modifiable then
+    util.log("buffer is not modifiable")
+    return
+  end
+
   -- No formatters defined for the given file type
   if util.isEmpty(formatters) then
-    util.log(string.format("Format: no formatter defined for %s files", filetype))
+    util.log(string.format("no formatter defined for %s files", filetype))
     return
   end
 
@@ -51,12 +56,12 @@ function M.startTask(configs, startLine, endLine, force, write)
         data[#data] = nil
       end
       if not util.isEmpty(data) then
-        util.log(string.format("Format: error running %s, %s", name, vim.inspect(data)))
+        util.log(string.format("error running %s, %s", name, vim.inspect(data)))
       end
     end
     if event == "exit" then
       if data == 0 then
-        util.log(string.format("Format: finished running %s", name))
+        util.log(string.format("finished running %s", name))
         output = currentOutput
       end
       F.step()
@@ -88,20 +93,31 @@ function M.startTask(configs, startLine, endLine, force, write)
   -- do not play well together
   function F.step()
     if #configs == 0 then
-      if (not api.nvim_buf_get_option(bufnr, "modified") or force) and not util.isSame(input, output) then
-        local view = vim.fn.winsaveview()
-        util.setLines(bufnr, startLine, endLine, output)
-        vim.fn.winrestview(view)
-
-        if write and bufnr == api.nvim_get_current_buf() then
-          vim.api.nvim_command("noautocmd :update")
-        end
-      end
-
-      util.fireEvent("FormatterPost")
+      F.done()
       return
     end
     F.run(table.remove(configs, 1))
+  end
+
+  function F.done()
+    if (not api.nvim_buf_get_option(bufnr, "modified") or force) then
+      for i, line in pairs(output) do
+        if i > #input then
+          vim.fn.appendbufline(bufnr, startLine + i - 1, line)
+        elseif input[i] ~= output[i] then
+          vim.fn.setbufline(bufnr, startLine + i, line)
+        end
+      end
+      if endLine - startLine > #output then
+        util.setLines(bufnr, startLine + #output, endLine, {})
+      end
+
+      if write and bufnr == api.nvim_get_current_buf() then
+        vim.api.nvim_command("noautocmd :update")
+      end
+    end
+
+    util.fireEvent("FormatterPost")
   end
 
   -- AND start the loop

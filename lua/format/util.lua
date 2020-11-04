@@ -2,16 +2,11 @@ local vim = vim
 local util = {}
 
 function util.log(...)
-  vim.api.nvim_out_write(table.concat(vim.tbl_flatten {...}) .. "\n")
-end
-
-function util.inspect(val)
-  print(vim.inspect(val))
+  vim.api.nvim_out_write("Formatter: " .. table.concat(vim.tbl_flatten {...}) .. "\n")
 end
 
 function util.error(...)
-  print(table.concat(...))
-  vim.api.nvim_error_write(table.concat(vim.tbl_flatten {...}) .. "\n")
+  vim.api.nvim_err_write(table.concat(vim.tbl_flatten {...}) .. "\n")
 end
 
 function util.setLines(bufnr, startLine, endLine, lines)
@@ -44,27 +39,8 @@ function util.split(s, sep, plain)
   end
 end
 
-function util.isSame(a, b)
-  if type(a) ~= type(b) then
-    return false
-  end
-  if type(a) == "table" then
-    if #a ~= #b then
-      return false
-    end
-    for k, v in pairs(a) do
-      if not util.isSame(b[k], v) then
-        return false
-      end
-    end
-    return true
-  else
-    return a == b
-  end
-end
-
 function util.fireEvent(event)
-  local cmd = string.format('silent doautocmd <nomodeline> User %s', event)
+  local cmd = string.format("silent doautocmd <nomodeline> User %s", event)
   vim.api.nvim_command(cmd)
 end
 return util
