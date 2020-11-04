@@ -71,7 +71,7 @@ function M.startTask(configs, startLine, endLine, force, write)
   function F.run(current)
     name = current.name
     local exe = current.config.exe
-    local args = table.concat(current.config.args, " ")
+    local args = table.concat(current.config.args or {}, " ")
     local cmd_str = string.format("%s %s", exe, args)
     local job_id =
       vim.fn.jobstart(
