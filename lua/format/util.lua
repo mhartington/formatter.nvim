@@ -16,4 +16,18 @@ end
 function util.isEmpty(s)
   return s == nil or s == ""
 end
+
+function util.compareTable(table1, table2)
+  if #table1 ~= #table2 then
+    return false
+  end
+
+  for index, value in ipairs(table1) do
+    if value ~= table2[index] then
+      return false
+    end
+  end
+  
+  return true
+end
 return util

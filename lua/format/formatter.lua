@@ -57,8 +57,14 @@ function formatter.startTask(name, conf, startLine, endLine)
   if (stdin == true) then
     local output = runner.createJob(cmd, args, lines)
     if (api.nvim_get_vvar("shell_error") == 0) then
-      util.setLines(bufnr, startLine, endLine, output)
-      util.log(string.format("Format: finished running %s", name))
+      if (util.compareTable(lines, output) == false) then
+        util.setLines(bufnr, startLine, endLine, output)
+        util.log(string.format("Format: finished running %s", name))
+      else
+        util.log(
+          string.format("Format: formatting with %s didn't change the file", name)
+          )
+      end
     else
       util.log(output)
       util.log(string.format("Format: failed to run %s", name))
