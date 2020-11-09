@@ -5,6 +5,10 @@ function util.log(...)
   vim.api.nvim_out_write(table.concat(vim.tbl_flatten {...}) .. "\n")
 end
 
+function util.err(msg)
+  vim.api.nvim_err_writeln(string.format("%s", msg))
+end
+
 function util.inspect(val)
   print(vim.inspect(val))
 end

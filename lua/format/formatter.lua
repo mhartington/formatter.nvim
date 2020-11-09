@@ -12,7 +12,6 @@ function M.format(bang, args, startLine, endLine, write)
   local userPassedFmt = util.split(args, " ")
   local filetype = vim.fn.eval("&filetype")
   local formatters = config.values[filetype]
-
   -- No formatters defined for the given file type
   if util.isEmpty(formatters) then
     util.log(string.format("Format: no formatter defined for %s files", filetype))
@@ -51,7 +50,7 @@ function M.startTask(configs, startLine, endLine, force, write)
         data[#data] = nil
       end
       if not util.isEmpty(data) then
-        util.log(string.format("Format: error running %s, %s", name, vim.inspect(data)))
+        util.err(string.format("Format: error running %s", name))
       end
     end
     if event == "exit" then
@@ -88,7 +87,7 @@ function M.startTask(configs, startLine, endLine, force, write)
   -- do not play well together
   function F.step()
     if #configs == 0 then
-      if (not api.nvim_buf_get_option(bufnr, "modified") or force) and not util.isSame(input, output) then
+      if not util.isSame(input, output) then
         local view = vim.fn.winsaveview()
         util.setLines(bufnr, startLine, endLine, output)
         vim.fn.winrestview(view)
@@ -96,8 +95,9 @@ function M.startTask(configs, startLine, endLine, force, write)
         if write and bufnr == api.nvim_get_current_buf() then
           vim.api.nvim_command("noautocmd :update")
         end
+      else
+        util.log(string.format("Formatter: no change necessary with %s", name))
       end
-
       util.fireEvent("FormatterPost")
       return
     end
