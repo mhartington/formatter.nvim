@@ -1,12 +1,20 @@
 local vim = vim
 local util = {}
 
+-- Print to cmd line, always
+function util.print(msg)
+  local txt = string.format("Formatter: %s", msg)
+  vim.api.nvim_out_write(txt .. "\n")
+end
+
 function util.log(...)
   vim.api.nvim_out_write(table.concat(vim.tbl_flatten {...}) .. "\n")
 end
 
+-- Always print error message to cmd line
 function util.err(msg)
-  vim.api.nvim_err_writeln(string.format("%s", msg))
+  local txt = string.format("Formatter: %s", msg)
+  vim.api.nvim_err_writeln(txt)
 end
 
 function util.inspect(val)
@@ -68,7 +76,7 @@ function util.isSame(a, b)
 end
 
 function util.fireEvent(event)
-  local cmd = string.format('silent doautocmd <nomodeline> User %s', event)
+  local cmd = string.format("silent doautocmd <nomodeline> User %s", event)
   vim.api.nvim_command(cmd)
 end
 return util

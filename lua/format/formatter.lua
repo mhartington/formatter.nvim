@@ -10,11 +10,18 @@ function M.format(bang, args, startLine, endLine, write)
   local force = bang == "!"
 
   local userPassedFmt = util.split(args, " ")
+  local modifiable = vim.fn.eval("&modifiable")
   local filetype = vim.fn.eval("&filetype")
   local formatters = config.values[filetype]
+
+  if not modifiable then
+    util.print("Buffer is not modifiable")
+    return
+  end
+
   -- No formatters defined for the given file type
   if util.isEmpty(formatters) then
-    util.log(string.format("Format: no formatter defined for %s files", filetype))
+    util.print(string.format("No formatter defined for %s files", filetype))
     return
   end
 
@@ -50,12 +57,12 @@ function M.startTask(configs, startLine, endLine, force, write)
         data[#data] = nil
       end
       if not util.isEmpty(data) then
-        util.err(string.format("Format: error running %s", name))
+        util.err(string.format("Error running %s", name))
       end
     end
     if event == "exit" then
       if data == 0 then
-        util.log(string.format("Format: finished running %s", name))
+        util.print(string.format("Finished running %s", name))
         output = currentOutput
       end
       F.step()
@@ -65,7 +72,7 @@ function M.startTask(configs, startLine, endLine, force, write)
   function F.run(current)
     name = current.name
     local exe = current.config.exe
-    local args = table.concat(current.config.args, " ")
+    local args = table.concat(current.config.args or {}, " ")
     local cmd_str = string.format("%s %s", exe, args)
     local job_id =
       vim.fn.jobstart(
@@ -87,21 +94,27 @@ function M.startTask(configs, startLine, endLine, force, write)
   -- do not play well together
   function F.step()
     if #configs == 0 then
-      if not util.isSame(input, output) then
-        local view = vim.fn.winsaveview()
-        util.setLines(bufnr, startLine, endLine, output)
-        vim.fn.winrestview(view)
-
-        if write and bufnr == api.nvim_get_current_buf() then
-          vim.api.nvim_command("noautocmd :update")
-        end
-      else
-        util.log(string.format("Formatter: no change necessary with %s", name))
-      end
-      util.fireEvent("FormatterPost")
+      F.done()
       return
     end
     F.run(table.remove(configs, 1))
+  end
+
+  function F.done()
+    if not util.isSame(input, output) then
+      local view = vim.fn.winsaveview()
+
+      util.setLines(bufnr, startLine, endLine, output)
+      vim.fn.winrestview(view)
+
+      if write and bufnr == api.nvim_get_current_buf() then
+        vim.api.nvim_command("noautocmd :update")
+      end
+    else
+      util.print(string.format("No change necessary with %s", name))
+    end
+    util.fireEvent("FormatterPost")
+    return
   end
 
   -- AND start the loop
