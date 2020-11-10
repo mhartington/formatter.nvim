@@ -1,11 +1,11 @@
 function! s:formatter_complete(...)
-  return luaeval('vim.tbl_keys(require("format.complete").complete(_A))', a:000)
+  return luaeval('require("formatter.complete").complete(_A)', a:000)
 endfunction
 
-command! -nargs=? -range=% -bang
+command! -nargs=? -range=%
       \ -complete=customlist,s:formatter_complete
-      \ Format lua require"format.formatter".format("<bang>", <q-args>, <line1>, <line2>, false)
+      \ Format lua require("formatter.format").format(<q-args>, <line1>, <line2>, false)
 
-command! -nargs=? -range=% -bang
+command! -nargs=? -range=%
       \ -complete=customlist,s:formatter_complete
-      \ FormatWrite lua require"format.formatter".format("<bang>", <q-args>, <line1>, <line2>, true)
+      \ FormatWrite lua require("formatter.format").format(<q-args>, <line1>, <line2>, true)

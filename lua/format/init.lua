@@ -1,7 +1,15 @@
 local vim = vim
-local config = require("format.config")
+
 local M = {}
-function M.setup(o)
-  config.set_defaults(o)
+
+function M.setup(_)
+  vim.api.nvim_err_write(
+    [[
+Formatter: The package name for formatter.nvim has changed.
+Please update the latest name
+require('format') to require('formatter')
+  ]]
+  )
 end
+
 return M

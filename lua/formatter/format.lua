@@ -1,18 +1,16 @@
 local vim = vim
 local api = vim.api
-local config = require "format.config"
-local util = require "format.util"
+local config = require "formatter.config"
+local util = require "formatter.util"
 
 local M = {}
 
-function M.format(bang, args, startLine, endLine, write)
+function M.format(args, startLine, endLine, write)
   startLine = startLine - 1
-  local force = bang == "!"
-
   local userPassedFmt = util.split(args, " ")
   local modifiable = vim.fn.eval("&modifiable")
   local filetype = vim.fn.eval("&filetype")
-  local formatters = config.values[filetype]
+  local formatters = config.values.filetype[filetype]
 
   if not modifiable then
     util.print("Buffer is not modifiable")
@@ -24,17 +22,17 @@ function M.format(bang, args, startLine, endLine, write)
     util.print(string.format("No formatter defined for %s files", filetype))
     return
   end
-
   local configsToRun = {}
-  for name, fmtConfig in pairs(formatters) do
-    if userPassedFmt == nil or userPassedFmt[name] then
-      table.insert(configsToRun, {config = fmtConfig(), name = name})
+  for _, val in ipairs(formatters) do
+    local tmp = val()
+    if userPassedFmt == nil or userPassedFmt[tmp.exe] then
+      table.insert(configsToRun, {config = tmp, name = tmp.exe})
     end
   end
-  M.startTask(configsToRun, startLine, endLine, force, write)
+  M.startTask(configsToRun, startLine, endLine, write)
 end
 
-function M.startTask(configs, startLine, endLine, force, write)
+function M.startTask(configs, startLine, endLine, write)
   local F = {}
   local bufnr = api.nvim_get_current_buf()
   local input = util.getLines(bufnr, startLine, endLine)

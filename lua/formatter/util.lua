@@ -1,4 +1,7 @@
 local vim = vim
+local config = require("formatter.config")
+local loggingEnabled = config.values.logging
+
 local util = {}
 
 -- Print to cmd line, always
@@ -7,23 +10,30 @@ function util.print(msg)
   vim.api.nvim_out_write(txt .. "\n")
 end
 
-function util.log(...)
-  vim.api.nvim_out_write(table.concat(vim.tbl_flatten {...}) .. "\n")
-end
-
 -- Always print error message to cmd line
 function util.err(msg)
   local txt = string.format("Formatter: %s", msg)
   vim.api.nvim_err_writeln(txt)
 end
 
+-- Generic logging
+function util.log(...)
+  if loggingEnabled then
+    vim.api.nvim_out_write(table.concat(vim.tbl_flatten {...}) .. "\n")
+  end
+end
+
 function util.inspect(val)
-  print(vim.inspect(val))
+  if loggingEnabled then
+    print(vim.inspect(val))
+  end
 end
 
 function util.error(...)
-  print(table.concat(...))
-  vim.api.nvim_error_write(table.concat(vim.tbl_flatten {...}) .. "\n")
+  if loggingEnabled then
+    print(table.concat(...))
+    vim.api.nvim_error_write(table.concat(vim.tbl_flatten {...}) .. "\n")
+  end
 end
 
 function util.setLines(bufnr, startLine, endLine, lines)
@@ -36,7 +46,7 @@ end
 
 function util.isEmpty(s)
   if type(s) == "table" then
-    for k, v in pairs(s) do
+    for _, v in pairs(s) do
       if not util.isEmpty(v) then
         return false
       end
