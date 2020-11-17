@@ -30,7 +30,7 @@ By default there are no tools configured. This may change.
 To config a tool, you can create a table for the filetype and tool you want to use
 
 ```lua
-require('format').setup({
+require('formatter').setup({
   logging = false,
   filetype = {
     javascript = {
