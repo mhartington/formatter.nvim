@@ -30,7 +30,6 @@ function formatter.internalFormatter(userFmtTable, startLine, endLine)
   local formatters = config.values[filetype]
   -- No formatters defined for the given file type
   if (util.isEmpty(formatters)) then
-    print(string.format("Format: no formatter defined for %s files", filetype))
     return
   end
 
