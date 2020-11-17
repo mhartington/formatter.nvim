@@ -51,7 +51,7 @@ function formatter.startTask(name, conf, startLine, endLine)
   local bufnr = api.nvim_get_current_buf()
   local lines = util.getLines(bufnr, startLine, endLine)
   local cmd = o.exe
-  local args = table.concat(o.args, " ")
+  local args = table.concat(o.args or {}, " ")
   local stdin = o.stdin or false
 
   if (stdin == true) then
