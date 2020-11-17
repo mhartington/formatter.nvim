@@ -1,4 +1,3 @@
-local vim = vim
 local api = vim.api
 local config = require "formatter.config"
 local util = require "formatter.util"
@@ -8,8 +7,8 @@ local M = {}
 function M.format(args, startLine, endLine, write)
   startLine = startLine - 1
   local userPassedFmt = util.split(args, " ")
-  local modifiable = vim.fn.eval("&modifiable")
-  local filetype = vim.fn.eval("&filetype")
+  local modifiable = vim.bo.modifiable
+  local filetype = vim.bo.filetype
   local formatters = config.values.filetype[filetype]
 
   if not modifiable then

@@ -1,4 +1,3 @@
-local vim = vim
 local config = require("formatter.config")
 local loggingEnabled = config.values.logging
 
@@ -89,4 +88,5 @@ function util.fireEvent(event)
   local cmd = string.format("silent doautocmd <nomodeline> User %s", event)
   vim.api.nvim_command(cmd)
 end
+
 return util
