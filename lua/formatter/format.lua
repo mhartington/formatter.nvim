@@ -36,7 +36,7 @@ function M.startTask(configs, startLine, endLine, write)
   local bufnr = api.nvim_get_current_buf()
   local input = util.getLines(bufnr, startLine, endLine)
   local output = input
-
+  local errOutput = nil
   local name
   local currentOutput
 
@@ -49,21 +49,34 @@ function M.startTask(configs, startLine, endLine, write)
         currentOutput = data
       end
     end
+
     if event == "stderr" then
       if data[#data] == "" then
         data[#data] = nil
       end
       if not util.isEmpty(data) then
-        util.err(string.format("Error running %s", name))
+        errOutput = data
       end
     end
+
     if event == "exit" then
+      -- Data is exit code here
+      -- Failed to run, stop the loop
+      if data > 0 then
+        if errOutput then
+          util.err(string.format('failed to run formatter %s', name))
+        end
+      end
+
+      -- Success
       if data == 0 then
         util.print(string.format("Finished running %s", name))
         output = currentOutput
+        F.step()
       end
-      F.step()
+
     end
+
   end
 
   function F.run(current)
@@ -99,17 +112,19 @@ function M.startTask(configs, startLine, endLine, write)
 
   function F.done()
     if not util.isSame(input, output) then
-      local view = vim.fn.winsaveview()
 
+      local view = vim.fn.winsaveview()
       util.setLines(bufnr, startLine, endLine, output)
       vim.fn.winrestview(view)
 
       if write and bufnr == api.nvim_get_current_buf() then
         vim.api.nvim_command("noautocmd :update")
       end
+
     else
       util.print(string.format("No change necessary with %s", name))
     end
+
     util.fireEvent("FormatterPost")
     return
   end
