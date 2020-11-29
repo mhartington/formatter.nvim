@@ -18,7 +18,7 @@ call dein#add('mhartington/formatter.nvim')
 
 " configure the plugin
 
-lua require('format').setup()
+lua require('formatter').setup(...)
 " Provided by setup function
 nnoremap <silent> <leader>f :Format<CR>
 ```
@@ -30,31 +30,49 @@ By default there are no tools configured. This may change.
 To config a tool, you can create a table for the filetype and tool you want to use
 
 ```lua
-require('format').setup({
-  javascript = {
-      prettier = function()
+require('formatter').setup({
+  logging = false,
+  filetype = {
+    javascript = {
+        -- prettier
+       function()
+          return {
+            exe = "prettier",
+            args = {"--stdin-filepath", vim.api.nvim_buf_get_name(0), '--single-quote'},
+            stdin = true
+          }
+        end
+    },
+    rust = {
+      -- Rustfmt
+      function()
         return {
-          exe = "prettier",
-          args = {"--stdin-filepath", vim.api.nvim_buf_get_name(0), '--single-quote'},
-          stdin = true
-        }
-      end
-  },
-  lua = {
-      luafmt = function()
-        return {
-          exe = "luafmt",
-          args = {"--indent-count", 2, "--stdin"},
+          exe = "rustfmt",
+          args = {"--emit=stdout"},
           stdin = true
         }
       end
     }
+    lua = {
+        -- luafmt
+        function()
+          return {
+            exe = "luafmt",
+            args = {"--indent-count", 2, "--stdin"},
+            stdin = true
+          }
+        end
+      }
+  }
 })
 ```
 
 Each format tool config is a function that returns a table.
-The main keys to have are:
+Since each entry is a function, the tables for each file type act as an ordered list (or array).
+This mean things will run in the order you list them, keep this in mind.
 
+Each formatter should return a table that consist of:
 - `exe`: the program you wish to run
 - `args`: a table of args to pass
 - `stdin`: If it should use stdin or not. As of now, only stdin tools are supported. But will add support for reading files.
+

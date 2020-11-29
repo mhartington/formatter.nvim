@@ -1,10 +1,14 @@
 local vim = vim
-local config = require("format.config")
+
 local M = {}
-function M.setup(o)
-  config.set_defaults(o)
-  vim.api.nvim_command(
-    'command! -nargs=? -range=% -bang Format lua require"format.formatter".format(<q-args>, <line1>, <line2>)'
+
+function M.setup(_)
+  vim.api.nvim_err_write(
+    [[
+Formatter: The package name for formatter.nvim has changed.
+Please update the latest name
+require('format') to require('formatter')
+  ]]
   )
 end
 

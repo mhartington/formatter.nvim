@@ -1,4 +1,3 @@
-local vim = vim
 _FormatterConfigurationValues = _FormatterConfigurationValues or {}
 
 local config = {}
