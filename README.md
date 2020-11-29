@@ -52,7 +52,7 @@ require('formatter').setup({
           stdin = true
         }
       end
-    }
+    },
     lua = {
         -- luafmt
         function()
