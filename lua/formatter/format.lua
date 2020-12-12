@@ -21,17 +21,11 @@ function M.format(args, startLine, endLine, write)
     util.print(string.format("No formatter defined for %s files", filetype))
     return
   end
-  local configsToRun = {}
-  for _, val in ipairs(formatters) do
-    local tmp = val()
-    if userPassedFmt == nil or userPassedFmt[tmp.exe] then
-      table.insert(configsToRun, {config = tmp, name = tmp.exe})
-    end
-  end
+  local configsToRun = util.getConfigsToRun(userPassedFmt, formatters)
   M.startTask(configsToRun, startLine, endLine, write)
 end
 
-function M.startTask(configs, startLine, endLine, write)
+function M.startTask(configs, startLine, endLine, write, cb)
   local F = {}
   local bufnr = api.nvim_get_current_buf()
   local bufname = vim.fn.bufname(bufnr)
@@ -148,7 +142,9 @@ function M.startTask(configs, startLine, endLine, write)
     end
 
     util.fireEvent("FormatterPost")
-    return
+    if cb ~= nil then
+      cb()
+    end
   end
 
   -- AND start the loop

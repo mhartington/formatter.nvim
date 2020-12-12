@@ -63,6 +63,18 @@ require('formatter').setup({
           }
         end
       }
+  },
+  embedded = {
+    {
+      start_pattern = "^lua << EOF$",
+      end_pattern = "^EOF$",
+      filetype = "lua"
+    },
+    {
+      start_pattern = "^```javascript$",
+      end_pattern = "^```$",
+      filetype = "javascript"
+    }
   }
 })
 ```

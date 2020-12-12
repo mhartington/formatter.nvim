@@ -126,4 +126,15 @@ function util.read_temp_file(tempfile_name)
   return lines
 end
 
+function util.getConfigsToRun(userPassedFmt, formatters)
+  local configsToRun = {}
+  for _, val in ipairs(formatters) do
+    local tmp = val()
+    if userPassedFmt == nil or userPassedFmt[tmp.exe] then
+      table.insert(configsToRun, {config = tmp, name = tmp.exe})
+    end
+  end
+  return configsToRun
+end
+
 return util
