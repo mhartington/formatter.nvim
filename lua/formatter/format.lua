@@ -34,16 +34,21 @@ end
 function M.startTask(configs, startLine, endLine, write)
   local F = {}
   local bufnr = api.nvim_get_current_buf()
+  local bufname = vim.fn.bufname(bufnr)
   local input = util.getLines(bufnr, startLine, endLine)
   local output = input
   local errOutput = nil
   local name
   local currentOutput
+  local tempfiles = {}
 
-  function F.on_event(_, data, event)
+  function F.on_event(job_id, data, event)
     if event == "stdout" then
       if data[#data] == "" then
         data[#data] = nil
+      end
+      if tempfiles[job_id] ~= nil then
+        data = util.read_temp_file(tempfiles[job_id])
       end
       if not util.isEmpty(data) then
         currentOutput = data
@@ -60,11 +65,15 @@ function M.startTask(configs, startLine, endLine, write)
     end
 
     if event == "exit" then
+      if tempfiles[job_id] ~= nil then
+        os.remove(tempfiles[job_id])
+      end
+
       -- Data is exit code here
       -- Failed to run, stop the loop
       if data > 0 then
         if errOutput then
-          util.err(string.format('failed to run formatter %s', name))
+          util.err(string.format("failed to run formatter %s", name))
         end
       end
 
@@ -74,9 +83,7 @@ function M.startTask(configs, startLine, endLine, write)
         output = currentOutput
         F.step()
       end
-
     end
-
   end
 
   function F.run(current)
@@ -84,19 +91,36 @@ function M.startTask(configs, startLine, endLine, write)
     local exe = current.config.exe
     local args = table.concat(current.config.args or {}, " ")
     local cmd_str = string.format("%s %s", exe, args)
-    local job_id =
-      vim.fn.jobstart(
-      cmd_str,
-      {
-        on_stderr = F.on_event,
-        on_stdout = F.on_event,
-        on_exit = F.on_event,
-        stdout_buffered = true,
-        stderr_buffered = true
-      }
-    )
-    vim.fn.chansend(job_id, output)
-    vim.fn.chanclose(job_id, "stdin")
+    if current.config.stdin then
+      local job_id =
+        vim.fn.jobstart(
+        cmd_str,
+        {
+          on_stderr = F.on_event,
+          on_stdout = F.on_event,
+          on_exit = F.on_event,
+          stdout_buffered = true,
+          stderr_buffered = true
+        }
+      )
+      vim.fn.chansend(job_id, output)
+      vim.fn.chanclose(job_id, "stdin")
+    else
+      local tempfile_name = util.create_temp_file(bufname, output, current.config)
+      cmd_str = string.format("%s %s", cmd_str, tempfile_name)
+      local job_id =
+        vim.fn.jobstart(
+        cmd_str,
+        {
+          on_stderr = F.on_event,
+          on_stdout = F.on_event,
+          on_exit = F.on_event,
+          stdout_buffered = true,
+          stderr_buffered = true
+        }
+      )
+      tempfiles[job_id] = tempfile_name
+    end
   end
 
   -- Process through each config
@@ -112,7 +136,6 @@ function M.startTask(configs, startLine, endLine, write)
 
   function F.done()
     if not util.isSame(input, output) then
-
       local view = vim.fn.winsaveview()
       util.setLines(bufnr, startLine, endLine, output)
       vim.fn.winrestview(view)
@@ -120,7 +143,6 @@ function M.startTask(configs, startLine, endLine, write)
       if write and bufnr == api.nvim_get_current_buf() then
         vim.api.nvim_command("noautocmd :update")
       end
-
     else
       util.print(string.format("No change necessary with %s", name))
     end

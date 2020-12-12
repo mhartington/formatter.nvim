@@ -74,7 +74,10 @@ This mean things will run in the order you list them, keep this in mind.
 Each formatter should return a table that consist of:
 - `exe`: the program you wish to run
 - `args`: a table of args to pass
-- `stdin`: If it should use stdin or not. As of now, only stdin tools are supported. But will add support for reading files.
+- `stdin`: If it should use stdin or not.
+- `tempfile_dir`:  directory for temp file when not using stdin (optional)
+- `tempfile_prefix`:  prefix for temp file when not using stdin (optional)
+- `tempfile_postfix`:  postfix for temp file when not using stdin (optional)
 
 ### Format on save
 

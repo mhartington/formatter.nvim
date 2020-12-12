@@ -89,4 +89,41 @@ function util.fireEvent(event)
   vim.api.nvim_command(cmd)
 end
 
+function util.create_temp_file(bufname, input, opts)
+  local split_bufname = vim.split(bufname, "/")
+  local tempfile_prefix = opts.tempfile_prefix or "~formatting"
+  local tempfile_postfix = opts.tempfile_postfix or ""
+  local filename =
+    ("%s_%d_%s%s"):format(tempfile_prefix, math.random(1, 1000000), split_bufname[#split_bufname], tempfile_postfix)
+  split_bufname[#split_bufname] = nil
+  local tempfile_dir = table.concat(split_bufname, "/")
+  if tempfile_dir == "" then
+    tempfile_dir = "."
+  end
+  local tempfile_name = ("%s/%s"):format((opts.tempfile_dir or tempfile_dir), filename)
+
+  local tempfile = io.open(tempfile_name, "w+")
+  for _, line in pairs(input) do
+    tempfile:write(line .. "\n")
+  end
+  tempfile:flush()
+  tempfile:close()
+
+  return tempfile_name
+end
+
+function util.read_temp_file(tempfile_name)
+  local tempfile = io.open(tempfile_name, "r")
+  if tempfile == nil then
+    return
+  end
+  local lines = {}
+  for line in tempfile:lines() do
+    table.insert(lines, line)
+  end
+  tempfile:close()
+
+  return lines
+end
+
 return util
