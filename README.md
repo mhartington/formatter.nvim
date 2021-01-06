@@ -76,3 +76,15 @@ Each formatter should return a table that consist of:
 - `args`: a table of args to pass
 - `stdin`: If it should use stdin or not. As of now, only stdin tools are supported. But will add support for reading files.
 
+### Format on save
+
+To enable format on save, you can create a `autocmd` to trigger the formater using `FormatWrite`, which will format and write to the current saved file.
+
+```lua
+vim.api.nvim_exec([[
+augroup FormatAutogroup
+  autocmd!
+  autocmd BufWritePost *.js,*.rs,*.lua FormatWrite
+augroup END
+]], true)
+```
