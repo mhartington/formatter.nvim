@@ -129,7 +129,7 @@ function M.startTask(configs, startLine, endLine, write, cb)
   end
 
   function F.done()
-    if not util.isSame(input, output) then
+    if not util.isEmpty(output) and not util.isSame(input, output) then
       local view = vim.fn.winsaveview()
       util.setLines(bufnr, startLine, endLine, output)
       vim.fn.winrestview(view)
