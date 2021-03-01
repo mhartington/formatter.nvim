@@ -89,4 +89,9 @@ function util.fireEvent(event)
   vim.api.nvim_command(cmd)
 end
 
+function util.getBufVar(buf, var)
+  local result = pcall(vim.api.nvim_buf_get_var, buf, var)
+  if not result then return true end
+  return vim.api.nvim_buf_get_var(buf, var)
+end
 return util
