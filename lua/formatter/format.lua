@@ -31,7 +31,7 @@ function M.format(args, startLine, endLine, write)
   M.startTask(configsToRun, startLine, endLine, write)
 end
 
-function M.startTask(configs, startLine, endLine, write)
+function M.startTask(configs, startLine, endLine, format_then_write)
   local F = {}
   local bufnr = api.nvim_get_current_buf()
   local input = util.getLines(bufnr, startLine, endLine)
@@ -39,7 +39,12 @@ function M.startTask(configs, startLine, endLine, write)
   local errOutput = nil
   local name
   local currentOutput
+  local buf_skip_format = util.getBufVar(bufnr, 'formatter_skip_buf') or false
 
+  if buf_skip_format then
+    util.print("Formatting turn off for buffer")
+    return
+  end
   function F.on_event(_, data, event)
     if event == "stdout" then
       if data[#data] == "" then
@@ -117,7 +122,7 @@ function M.startTask(configs, startLine, endLine, write)
       util.setLines(bufnr, startLine, endLine, output)
       vim.fn.winrestview(view)
 
-      if write and bufnr == api.nvim_get_current_buf() then
+      if format_then_write and bufnr == api.nvim_get_current_buf() then
         vim.api.nvim_command("noautocmd :update")
       end
 
@@ -130,6 +135,7 @@ function M.startTask(configs, startLine, endLine, write)
   end
 
   -- AND start the loop
+
   util.fireEvent("FormatterPre")
   F.step()
 end
