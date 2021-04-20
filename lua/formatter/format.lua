@@ -88,13 +88,17 @@ function M.startTask(configs, startLine, endLine, write)
 
   function F.run(current)
     name = current.name
-    local exe = current.config.exe
-    local args = table.concat(current.config.args or {}, " ")
-    local cmd_str = string.format("%s %s", exe, args)
+    local cmd = {current.config.exe}
+    if current.config.args ~= nil then
+      for _, arg in ipairs(current.config.args) do
+        table.insert(cmd, arg)
+      end
+    end
+
     if current.config.stdin then
       local job_id =
         vim.fn.jobstart(
-        cmd_str,
+        cmd,
         {
           on_stderr = F.on_event,
           on_stdout = F.on_event,
@@ -107,10 +111,10 @@ function M.startTask(configs, startLine, endLine, write)
       vim.fn.chanclose(job_id, "stdin")
     else
       local tempfile_name = util.create_temp_file(bufname, output, current.config)
-      cmd_str = string.format("%s %s", cmd_str, tempfile_name)
+      table.insert(cmd, tempfile_name)
       local job_id =
         vim.fn.jobstart(
-        cmd_str,
+        cmd,
         {
           on_stderr = F.on_event,
           on_stdout = F.on_event,

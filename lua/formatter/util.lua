@@ -119,7 +119,7 @@ function util.read_temp_file(tempfile_name)
   end
   local lines = {}
   for line in tempfile:lines() do
-    table.insert(lines, line)
+    lines[#lines + 1] = line
   end
   tempfile:close()
 
