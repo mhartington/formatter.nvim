@@ -39,9 +39,9 @@ function M.startTask(configs, startLine, endLine, format_then_write)
   local errOutput = nil
   local name
   local currentOutput
-  local buf_format_on_save = util.getBufVar(bufnr, 'formatter_format_on_save')
+  local buf_skip_format = util.getBufVar(bufnr, 'formatter_skip_buf') or false
 
-  if not buf_format_on_save then
+  if buf_skip_format then
     util.print("Formatting turn off for buffer")
     return
   end
