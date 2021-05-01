@@ -106,7 +106,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
     if current.config.stdin then
       local job_id =
         vim.fn.jobstart(
-        table.concat(cmd, " "),
+        current.config.no_shell and cmd or table.concat(cmd, " "),
         {
           on_stderr = F.on_event,
           on_stdout = F.on_event,
@@ -122,7 +122,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
       table.insert(cmd, tempfile_name)
       local job_id =
         vim.fn.jobstart(
-        table.concat(cmd, " "),
+        current.config.no_shell and cmd or table.concat(cmd, " "),
         {
           on_stderr = F.on_event,
           on_stdout = F.on_event,
