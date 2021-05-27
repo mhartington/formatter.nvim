@@ -36,7 +36,7 @@ function util.error(...)
 end
 
 function util.setLines(bufnr, startLine, endLine, lines)
-  return vim.api.nvim_buf_set_lines(bufnr, startLine, endLine, true, lines)
+  return vim.api.nvim_buf_set_lines(bufnr, startLine, endLine, false, lines)
 end
 
 function util.getLines(bufnr, startLine, endLine)
