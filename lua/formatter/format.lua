@@ -77,7 +77,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
       -- Failed to run, stop the loop
       if data > 0 then
         if errOutput then
-          util.err(string.format("failed to run formatter %s", name))
+          util.err(string.format("failed to run formatter %s", name .. ". " .. table.concat(errOutput)))
         end
       end
 
