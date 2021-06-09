@@ -77,7 +77,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
       -- Failed to run, stop the loop
       if data > 0 then
         if errOutput then
-          util.err(string.format("failed to run formatter %s", name))
+          util.err(string.format("failed to run formatter %s", name .. ". " .. table.concat(errOutput)))
         end
       end
 
@@ -149,6 +149,13 @@ function M.startTask(configs, startLine, endLine, format_then_write)
   function F.done()
     if not util.isSame(input, output) then
       local view = vim.fn.winsaveview()
+      -- print('check values here', bufnr, startLine, endLine, output)
+      if not output then
+        util.err(
+          string.format("Formatter: Formatted code not found. You may need to change the stdin setting of %s.", name)
+        )
+        return
+      end
       util.setLines(bufnr, startLine, endLine, output)
       vim.fn.winrestview(view)
 
