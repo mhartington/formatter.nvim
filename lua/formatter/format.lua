@@ -9,7 +9,6 @@ function M.format(args, startLine, endLine, write)
   local userPassedFmt = util.split(args, " ")
   local modifiable = vim.bo.modifiable
   local filetype = vim.bo.filetype
-  print('check filetype', filetype)
   local formatters = config.values.filetype[filetype]
 
   if not modifiable then
