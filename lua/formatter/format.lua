@@ -9,6 +9,7 @@ function M.format(args, startLine, endLine, write)
   local userPassedFmt = util.split(args, " ")
   local modifiable = vim.bo.modifiable
   local filetype = vim.bo.filetype
+  print('check filetype', filetype)
   local formatters = config.values.filetype[filetype]
 
   if not modifiable then
@@ -149,6 +150,11 @@ function M.startTask(configs, startLine, endLine, format_then_write)
   function F.done()
     if not util.isSame(input, output) then
       local view = vim.fn.winsaveview()
+      -- print('check values here', bufnr, startLine, endLine, output)
+		if not output then
+            util.err(string.format("Formatter: Formatted code not found. You may need to change the stdin setting of %s.", name))
+			return
+		end
       util.setLines(bufnr, startLine, endLine, output)
       vim.fn.winrestview(view)
 
