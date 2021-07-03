@@ -4,7 +4,8 @@ local util = require "formatter.util"
 
 local M = {}
 
-function M.format(args, startLine, endLine, write)
+function M.format(args, mods, startLine, endLine, write)
+  util.mods = mods
   startLine = startLine - 1
   local userPassedFmt = util.split(args, " ")
   local modifiable = vim.bo.modifiable
@@ -42,7 +43,6 @@ function M.startTask(configs, startLine, endLine, format_then_write)
   local currentOutput
   local buf_skip_format = util.getBufVar(bufnr, "formatter_skip_buf") or false
   local tempfiles = {}
-
   if buf_skip_format then
     util.print("Formatting turn off for buffer")
     return

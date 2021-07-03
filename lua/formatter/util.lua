@@ -2,17 +2,21 @@ local config = require("formatter.config")
 local loggingEnabled = config.values.logging
 
 local util = {}
-
+util.mods = nil
 -- Print to cmd line, always
 function util.print(msg)
-  local txt = string.format("Formatter: %s", msg)
-  vim.api.nvim_out_write(txt .. "\n")
+  if util.mods ~= 'silent' then
+    local txt = string.format("Formatter: %s", msg)
+    vim.notify(txt)
+  end
 end
 
 -- Always print error message to cmd line
 function util.err(msg)
-  local txt = string.format("Formatter: %s", msg)
-  vim.api.nvim_err_writeln(txt)
+  if util.mods ~= 'silent' then
+    local txt = string.format("Formatter: %s", msg)
+    vim.notify(txt, 3)
+  end
 end
 
 -- Generic logging

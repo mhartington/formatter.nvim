@@ -4,8 +4,8 @@ endfunction
 
 command! -nargs=? -range=%
       \ -complete=customlist,s:formatter_complete
-      \ Format lua require("formatter.format").format(<q-args>, <line1>, <line2>, false)
+      \ Format lua require("formatter.format").format(<q-args>, <q-mods>, <line1>, <line2>, false)
 
 command! -nargs=? -range=%
       \ -complete=customlist,s:formatter_complete
-      \ FormatWrite lua require("formatter.format").format(<q-args>, <line1>, <line2>, true)
+      \ FormatWrite lua require("formatter.format").format(<q-args>, <q-mods>, <line1>, <line2>, true)
