@@ -103,17 +103,25 @@ function M.startTask(configs, startLine, endLine, format_then_write)
       util.print(string.format("Stdin option is not set for %s. Please set stdin to either true or false", name))
       return
     end
+
+    local cwd = nil
+    if current.config.cwd ~= nil then
+      cwd = current.config.cwd()
+    end
+
+    local job_options = {
+        on_stderr = F.on_event,
+        on_stdout = F.on_event,
+        on_exit = F.on_event,
+        stdout_buffered = true,
+        stderr_buffered = true,
+        cwd = cwd
+    }
     if current.config.stdin then
       local job_id =
         vim.fn.jobstart(
         table.concat(cmd, " "),
-        {
-          on_stderr = F.on_event,
-          on_stdout = F.on_event,
-          on_exit = F.on_event,
-          stdout_buffered = true,
-          stderr_buffered = true
-        }
+       job_options
       )
       vim.fn.chansend(job_id, output)
       vim.fn.chanclose(job_id, "stdin")
@@ -123,13 +131,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
       local job_id =
         vim.fn.jobstart(
         table.concat(cmd, " "),
-        {
-          on_stderr = F.on_event,
-          on_stdout = F.on_event,
-          on_exit = F.on_event,
-          stdout_buffered = true,
-          stderr_buffered = true
-        }
+        job_options
       )
       tempfiles[job_id] = tempfile_name
     end
