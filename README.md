@@ -62,7 +62,18 @@ require('formatter').setup({
             stdin = true
           }
         end
-      }
+    },
+    cpp = {
+        -- clang-format
+       function()
+          return {
+            exe = "clang-format",
+            args = {},
+            stdin = true,
+            cwd = vim.fn.expand('%:p:h')  -- Run clang-format in cwd of the file.
+          }
+        end
+    }
   }
 })
 ```
@@ -75,9 +86,16 @@ Each formatter should return a table that consist of:
 - `exe`: the program you wish to run
 - `args`: a table of args to pass
 - `stdin`: If it should use stdin or not.
+- `cwd` : The path to run the program from.
 - `tempfile_dir`:  directory for temp file when not using stdin (optional)
 - `tempfile_prefix`:  prefix for temp file when not using stdin (optional)
 - `tempfile_postfix`:  postfix for temp file when not using stdin (optional)
+
+### cwd
+
+The cwd argument can be used for e.g. monolithic projects which contain sources with different styles.
+Setting cwd to the path of the file being formatted will cause e.g. `clang-format` to search for the
+nearest `.clang-format` file in the file's parent directories.
 
 ### Format on save
 
