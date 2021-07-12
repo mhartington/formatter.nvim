@@ -110,7 +110,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
         on_exit = F.on_event,
         stdout_buffered = true,
         stderr_buffered = true,
-        cwd = current.config.cwd,
+        cwd = current.config.cwd or vim.fn.getcwd(),
     }
 
     if current.config.stdin then
