@@ -104,19 +104,15 @@ function M.startTask(configs, startLine, endLine, format_then_write)
       return
     end
 
-    local cwd = nil
-    if current.config.cwd ~= nil then
-      cwd = current.config.cwd()
-    end
-
     local job_options = {
         on_stderr = F.on_event,
         on_stdout = F.on_event,
         on_exit = F.on_event,
         stdout_buffered = true,
         stderr_buffered = true,
-        cwd = cwd
+        cwd = current.config.cwd,
     }
+
     if current.config.stdin then
       local job_id =
         vim.fn.jobstart(
