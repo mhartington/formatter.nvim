@@ -3,6 +3,21 @@ local loggingEnabled = config.values.logging
 
 local util = {}
 util.mods = nil
+
+local pathSeparator = (function()
+  local jit = require("jit")
+  if jit then
+    local os = string.lower(jit.os)
+    if os == 'linux' or os == 'osx' or os == 'bsd' then
+      return "/"
+    else
+      return "\\"
+    end
+  else
+    return package.config:sub(1, 1)
+  end
+end)()
+
 -- Print to cmd line, always
 function util.print(msg)
   if util.mods ~= 'silent' then
@@ -102,14 +117,14 @@ function util.getBufVar(buf, var)
 end
 
 function util.create_temp_file(bufname, input, opts)
-  local split_bufname = vim.split(bufname, "/")
+  local split_bufname = vim.split(bufname, pathSeparator)
   local tempfile_prefix = opts.tempfile_prefix or "~formatting"
   local tempfile_postfix = opts.tempfile_postfix or ""
   local filename =
     ("%s_%d_%s%s"):format(tempfile_prefix, math.random(1, 1000000), split_bufname[#split_bufname], tempfile_postfix)
 
   split_bufname[#split_bufname] = nil
-  local tempfile_dir = table.concat(split_bufname, "/")
+  local tempfile_dir = table.concat(split_bufname, pathSeparator)
   if tempfile_dir == "" then
     tempfile_dir = "."
   end
