@@ -25,8 +25,6 @@ nnoremap <silent> <leader>f :Format<CR>
 
 ## Configure
 
-By default there are no tools configured. This may change.
-
 To config a tool, you can create a table for the filetype and tool you want to use
 
 ```lua
@@ -109,3 +107,7 @@ augroup FormatAutogroup
 augroup END
 ]], true)
 ```
+
+## Example configurations
+
+By default there are no tools configured. This may change in the future. For now there are examples in side `example/` for reference.
