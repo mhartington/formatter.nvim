@@ -40,6 +40,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
   local output = input
   local errOutput = nil
   local name
+  local ignore_exitcode
   local currentOutput
   local buf_skip_format = util.getBufVar(bufnr, "formatter_skip_buf") or false
   local tempfiles = {}
@@ -75,14 +76,14 @@ function M.startTask(configs, startLine, endLine, format_then_write)
       end
       -- Data is exit code here
       -- Failed to run, stop the loop
-      if data > 0 then
+      if not ignore_exitcode and data > 0 then
         if errOutput then
           util.err(string.format("failed to run formatter %s", name .. ". " .. table.concat(errOutput)))
         end
       end
 
       -- Success
-      if data == 0 then
+      if ignore_exitcode or data == 0 then
         util.print(string.format("Finished running %s", name))
         output = currentOutput
         F.step()
@@ -92,6 +93,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
 
   function F.run(current)
     name = current.name
+    ignore_exitcode = current.config.ignore_exitcode
     local cmd = {current.config.exe}
     if current.config.args ~= nil then
       for _, arg in ipairs(current.config.args) do
