@@ -25,7 +25,7 @@ function M.format(args, mods, startLine, endLine, write)
   local configsToRun = {}
   for _, val in ipairs(formatters) do
     local tmp = val()
-    if userPassedFmt == nil or userPassedFmt[tmp.exe] then
+    if tmp and tmp.exe and (userPassedFmt == nil or userPassedFmt[tmp.exe]) then
       table.insert(configsToRun, {config = tmp, name = tmp.exe})
     end
   end
@@ -105,30 +105,22 @@ function M.startTask(configs, startLine, endLine, format_then_write)
     end
 
     local job_options = {
-        on_stderr = F.on_event,
-        on_stdout = F.on_event,
-        on_exit = F.on_event,
-        stdout_buffered = true,
-        stderr_buffered = true,
-        cwd = current.config.cwd or vim.fn.getcwd(),
+      on_stderr = F.on_event,
+      on_stdout = F.on_event,
+      on_exit = F.on_event,
+      stdout_buffered = true,
+      stderr_buffered = true,
+      cwd = current.config.cwd or vim.fn.getcwd()
     }
 
     if current.config.stdin then
-      local job_id =
-        vim.fn.jobstart(
-        table.concat(cmd, " "),
-       job_options
-      )
+      local job_id = vim.fn.jobstart(table.concat(cmd, " "), job_options)
       vim.fn.chansend(job_id, output)
       vim.fn.chanclose(job_id, "stdin")
     else
       local tempfile_name = util.create_temp_file(bufname, output, current.config)
       table.insert(cmd, tempfile_name)
-      local job_id =
-        vim.fn.jobstart(
-        table.concat(cmd, " "),
-        job_options
-      )
+      local job_id = vim.fn.jobstart(table.concat(cmd, " "), job_options)
       tempfiles[job_id] = tempfile_name
     end
   end
@@ -147,11 +139,8 @@ function M.startTask(configs, startLine, endLine, format_then_write)
   function F.done()
     if not util.isSame(input, output) then
       local view = vim.fn.winsaveview()
-      -- print('check values here', bufnr, startLine, endLine, output)
       if not output then
-        util.err(
-          string.format("Formatter: Formatted code not found. You may need to change the stdin setting of %s.", name)
-        )
+        util.err(string.format("Formatter: Formatted code not found. You may need to change the stdin setting"))
         return
       end
       util.setLines(bufnr, startLine, endLine, output)
@@ -161,7 +150,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
         vim.api.nvim_command("noautocmd :update")
       end
     else
-      util.print(string.format("No change necessary with %s", name))
+      util.print(string.format("No changes necessary"))
     end
 
     util.fireEvent("FormatterPost")

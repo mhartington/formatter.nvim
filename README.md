@@ -56,6 +56,11 @@ require('formatter').setup({
     lua = {
         -- luafmt
         function()
+          -- dynamically skip a formatter by returning nil
+          if vim.api.nvim_buf_line_count(0) > 1000 then
+            return nil
+          end
+
           return {
             exe = "luafmt",
             args = {"--indent-count", 2, "--stdin"},
@@ -90,6 +95,8 @@ Each formatter should return a table that consist of:
 - `tempfile_dir`:  directory for temp file when not using stdin (optional)
 - `tempfile_prefix`:  prefix for temp file when not using stdin (optional)
 - `tempfile_postfix`:  postfix for temp file when not using stdin (optional)
+
+If the table is `nil`, or has no `exe` defined, the formatter will be skipped.
 
 ### cwd
 
