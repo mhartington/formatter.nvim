@@ -19,7 +19,7 @@ function M.format(args, mods, startLine, endLine, write)
 
   -- No formatters defined for the given file type
   if util.isEmpty(formatters) then
-    util.print(string.format("No formatter defined for %s files", filetype))
+    util.err(string.format("No formatter defined for %s files", filetype))
     return
   end
   local configsToRun = {}
