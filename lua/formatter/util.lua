@@ -4,6 +4,8 @@ local loggingEnabled = config.values.logging
 local util = {}
 util.mods = nil
 
+local notify_opts = {title = 'Formatter'}
+
 local pathSeparator = (function()
   local jit = require("jit")
   if jit then
@@ -22,7 +24,7 @@ end)()
 function util.print(msg)
   if util.mods ~= 'silent' then
     local txt = string.format("Formatter: %s", msg)
-    vim.notify(txt)
+    vim.notify(txt, vim.log.levels.INFO, notify_opts)
   end
 end
 
@@ -30,7 +32,7 @@ end
 function util.err(msg)
   if util.mods ~= 'silent' then
     local txt = string.format("Formatter: %s", msg)
-    vim.notify(txt, 3)
+    vim.notify(txt, vim.log.levels.ERROR, notify_opts)
   end
 end
 
