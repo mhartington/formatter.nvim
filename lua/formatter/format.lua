@@ -5,6 +5,9 @@ local util = require "formatter.util"
 local M = {}
 
 function M.format(args, mods, startLine, endLine, write)
+  if M.saving then
+    return
+  end
   util.mods = mods
   startLine = startLine - 1
   local userPassedFmt = util.split(args, " ")
@@ -160,7 +163,9 @@ function M.startTask(configs, startLine, endLine, format_then_write)
       vim.fn.winrestview(view)
 
       if format_then_write and bufnr == api.nvim_get_current_buf() then
-        vim.api.nvim_command("noautocmd :update")
+        M.saving = true
+        vim.api.nvim_command("update")
+        M.saving = false
       end
     else
       util.print(string.format("No change necessary with %s", name))
