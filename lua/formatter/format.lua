@@ -86,8 +86,8 @@ function M.startTask(configs, startLine, endLine, format_then_write)
       if ignore_exitcode or data == 0 then
         util.print(string.format("Finished running %s", name))
         output = currentOutput
-        F.step()
       end
+      F.step()
     end
   end
 
