@@ -67,6 +67,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
       end
       if not util.isEmpty(data) then
         errOutput = data
+        F.step()
       end
     end
 
