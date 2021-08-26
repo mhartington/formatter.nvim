@@ -87,6 +87,7 @@ Each formatter should return a table that consist of:
 - `args`: a table of args to pass
 - `stdin`: If it should use stdin or not.
 - `cwd` : The path to run the program from.
+- `ignore_exitcode` : Set to true if the program expects non-zero success exit code (optional)
 - `tempfile_dir`:  directory for temp file when not using stdin (optional)
 - `tempfile_prefix`:  prefix for temp file when not using stdin (optional)
 - `tempfile_postfix`:  postfix for temp file when not using stdin (optional)
