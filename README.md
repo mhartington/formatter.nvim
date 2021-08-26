@@ -1,4 +1,4 @@
-# formatter.nvim
+# Formatter.nvim
 
 **WIP**
 
@@ -73,7 +73,17 @@ require('formatter').setup({
             cwd = vim.fn.expand('%:p:h')  -- Run clang-format in cwd of the file.
           }
         end
-    }
+    },
+    sh = {
+        -- Shell Script Formatter
+       function()
+         return {
+           exe = "shfmt",
+           args = { "-i", 2 },
+           stdin = true,
+         }
+       end,
+   }
   }
 })
 ```
@@ -83,14 +93,15 @@ Since each entry is a function, the tables for each file type act as an ordered 
 This mean things will run in the order you list them, keep this in mind.
 
 Each formatter should return a table that consist of:
+
 - `exe`: the program you wish to run
 - `args`: a table of args to pass
 - `stdin`: If it should use stdin or not.
 - `cwd` : The path to run the program from.
 - `ignore_exitcode` : Set to true if the program expects non-zero success exit code (optional)
-- `tempfile_dir`:  directory for temp file when not using stdin (optional)
-- `tempfile_prefix`:  prefix for temp file when not using stdin (optional)
-- `tempfile_postfix`:  postfix for temp file when not using stdin (optional)
+- `tempfile_dir`: directory for temp file when not using stdin (optional)
+- `tempfile_prefix`: prefix for temp file when not using stdin (optional)
+- `tempfile_postfix`: postfix for temp file when not using stdin (optional)
 
 ### cwd
 
