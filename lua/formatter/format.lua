@@ -40,6 +40,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
   local bufnr = api.nvim_get_current_buf()
   local bufname = vim.fn.bufname(bufnr)
   local input = util.getLines(bufnr, startLine, endLine)
+  local inital_changedtick = vim.api.nvim_buf_get_changedtick(bufnr)
   local output = input
   local errOutput = nil
   local name
@@ -95,6 +96,11 @@ function M.startTask(configs, startLine, endLine, format_then_write)
   end
 
   function F.run(current)
+    if inital_changedtick ~= vim.api.nvim_buf_get_changedtick(bufnr) then
+      util.print("Buffer changed while formatting, skipping")
+      return
+    end
+
     name = current.name
     ignore_exitcode = current.config.ignore_exitcode
     local cmd = {current.config.exe}
@@ -150,6 +156,11 @@ function M.startTask(configs, startLine, endLine, format_then_write)
   end
 
   function F.done()
+    if inital_changedtick ~= vim.api.nvim_buf_get_changedtick(bufnr) then
+      util.print("Buffer changed while formatting, not applying formatting")
+      return
+    end
+
     if not util.isSame(input, output) then
       local view = vim.fn.winsaveview()
       -- print('check values here', bufnr, startLine, endLine, output)
