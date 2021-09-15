@@ -38,7 +38,7 @@ end
 function M.startTask(configs, startLine, endLine, format_then_write)
   local F = {}
   local bufnr = api.nvim_get_current_buf()
-  local bufname = vim.fn.bufname(bufnr)
+  local bufname = api.nvim_buf_get_name(bufnr)
   local input = util.getLines(bufnr, startLine, endLine)
   local inital_changedtick = vim.api.nvim_buf_get_changedtick(bufnr)
   local output = input
