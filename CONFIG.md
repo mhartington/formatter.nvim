@@ -141,3 +141,21 @@ require('formatter').setup({
   }
 })
 ```
+## Black
+
+```lua
+require('formatter').setup({
+  filetype = {
+    python = {
+      -- Configuration for psf/black
+      function()
+        return {
+          exe = "black", -- this should be available on your $PATH
+          args = { '-' },
+          stdin = true,
+        }
+      end
+    }
+  }
+})
+```
