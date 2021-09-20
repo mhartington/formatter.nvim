@@ -141,3 +141,21 @@ require('formatter').setup({
   }
 })
 ```
+
+## terraform
+
+```lua
+require('formatter').setup({
+  filetype = {
+    terraform = {
+      function()
+        return {
+          exe = "terraform",
+          args = { "fmt", "-" },
+          stdin = true
+        }
+      end
+    }
+  }
+})
+```
