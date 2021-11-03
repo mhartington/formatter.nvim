@@ -88,7 +88,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
 
       -- Success
       if ignore_exitcode or data == 0 then
-        util.print(string.format("Finished running %s", name))
+        util.log(string.format("Finished running %s", name))
         output = currentOutput
       end
       F.step()
@@ -163,7 +163,6 @@ function M.startTask(configs, startLine, endLine, format_then_write)
 
     if not util.isSame(input, output) then
       local view = vim.fn.winsaveview()
-      -- print('check values here', bufnr, startLine, endLine, output)
       if not output then
         util.err(
           string.format("Formatter: Formatted code not found. You may need to change the stdin setting of %s.", name)
@@ -179,7 +178,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
         M.saving = false
       end
     else
-      util.print(string.format("No change necessary with %s", name))
+      util.log(string.format("No change necessary with %s", name))
     end
 
     util.fireEvent("FormatterPost")
