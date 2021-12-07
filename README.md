@@ -44,6 +44,7 @@ Each formatter should return a table that consist of:
 - `tempfile_dir`: directory for temp file when not using stdin (optional)
 - `tempfile_prefix`: prefix for temp file when not using stdin (optional)
 - `tempfile_postfix`: postfix for temp file when not using stdin (optional)
+- `display_errors` : Set to false to do not display errors messages (optional)
 
 ### cwd
 
