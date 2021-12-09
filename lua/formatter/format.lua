@@ -24,7 +24,7 @@ function M.format(args, mods, startLine, endLine, write)
   local configsToRun = {}
   -- No formatters defined for the given file type
   if util.isEmpty(formatters) then
-    util.eror(string.format("No formatter defined for %s files", filetype))
+    util.error(string.format("No formatter defined for %s files", filetype))
     return
   end
   for _, val in ipairs(formatters) do
@@ -84,7 +84,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
       -- Failed to run, stop the loop
       if not ignore_exitcode and data > 0 then
         if errOutput then
-          util.eror(string.format("failed to run formatter %s", name .. ". " .. table.concat(errOutput)))
+          util.error(string.format("failed to run formatter %s", name .. ". " .. table.concat(errOutput)))
         end
       end
 
