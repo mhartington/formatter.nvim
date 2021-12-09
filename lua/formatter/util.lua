@@ -1,10 +1,44 @@
 local config = require("formatter.config")
 local loggingEnabled = config.values.logging
-
+local log_level = config.values.log_level
 local util = {}
 util.mods = nil
 
 local notify_opts = {title = 'Formatter'}
+
+
+-- vim.log = {
+--   levels = {
+--     TRACE = 0;
+--     DEBUG = 1;
+--     INFO  = 2;
+--     WARN  = 3;
+--     ERROR = 4;
+--   }
+-- }
+
+
+function util.debug(txt)
+  if log_level == vim.log.levels.DEBUG then
+    vim.notify(txt, vim.log.levels.DEBUG, notify_opts)
+  end
+end
+function util.info(txt)
+  if log_level == vim.log.levels.INFO then
+    vim.notify(txt, vim.log.levels.INFO, notify_opts)
+  end
+end
+function util.warn(txt)
+  if log_level == vim.log.levels.WARN then
+    vim.notify(txt, vim.log.levels.WARN, notify_opts)
+  end
+end
+function util.error(...)
+  if log_level == vim.log.levels.WARN then
+    vim.notify(table.concat(vim.tbl_flatten {...}), vim.log.levels.WARN, notify_opts)
+  end
+end
+
 
 local pathSeparator = (function()
   local jit = require("jit")
@@ -28,14 +62,6 @@ function util.print(msg)
   end
 end
 
--- Always print error message to cmd line
-function util.err(msg)
-  if util.mods ~= 'silent' then
-    local txt = string.format("Formatter: %s", msg)
-    vim.notify(txt, vim.log.levels.ERROR, notify_opts)
-  end
-end
-
 -- Generic logging
 function util.log(...)
   if loggingEnabled then
@@ -49,12 +75,6 @@ function util.inspect(val)
   end
 end
 
-function util.error(...)
-  if loggingEnabled then
-    print(table.concat(...))
-    vim.api.nvim_error_write(table.concat(vim.tbl_flatten {...}) .. "\n")
-  end
-end
 
 function util.setLines(bufnr, startLine, endLine, lines)
   return vim.api.nvim_buf_set_lines(bufnr, startLine, endLine, false, lines)
