@@ -4,7 +4,7 @@ local util = require "formatter.util"
 
 local M = {}
 
-function M.format(args, mods, startLine, endLine, write)
+function M.format(args, mods, startLine, endLine, write, sync)
   if M.saving then
     return
   end
@@ -34,10 +34,10 @@ function M.format(args, mods, startLine, endLine, write)
     end
   end
 
-  M.startTask(configsToRun, startLine, endLine, write)
+  M.startTask(configsToRun, startLine, endLine, write, sync)
 end
 
-function M.startTask(configs, startLine, endLine, format_then_write)
+function M.startTask(configs, startLine, endLine, format_then_write, sync)
   local F = {}
   local bufnr = api.nvim_get_current_buf()
   local bufname = api.nvim_buf_get_name(bufnr)
@@ -126,8 +126,10 @@ function M.startTask(configs, startLine, endLine, format_then_write)
         cwd = current.config.cwd or vim.fn.getcwd(),
     }
 
+	local job_id = nil
+
     if current.config.stdin then
-      local job_id =
+      job_id =
         vim.fn.jobstart(
         table.concat(cmd, " "),
        job_options
@@ -137,12 +139,16 @@ function M.startTask(configs, startLine, endLine, format_then_write)
     else
       local tempfile_name = util.create_temp_file(bufname, output, current.config)
       table.insert(cmd, tempfile_name)
-      local job_id =
+      job_id =
         vim.fn.jobstart(
         table.concat(cmd, " "),
         job_options
       )
       tempfiles[job_id] = tempfile_name
+    end
+
+    if sync then
+      vim.fn.jobwait({job_id})
     end
   end
 
