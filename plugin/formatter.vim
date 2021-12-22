@@ -4,16 +4,16 @@ endfunction
 
 command! -nargs=? -range=% -bar
       \ -complete=customlist,s:formatter_complete
-      \ Format lua require("formatter.format").format(<q-args>, <q-mods>, <line1>, <line2>, false, false)
+      \ Format lua require("formatter.format").format(<q-args>, <q-mods>, <line1>, <line2>)
 
 command! -nargs=? -range=% -bar
       \ -complete=customlist,s:formatter_complete
-      \ FormatWrite lua require("formatter.format").format(<q-args>, <q-mods>, <line1>, <line2>, true, false)
+      \ FormatWrite lua require("formatter.format").format(<q-args>, <q-mods>, <line1>, <line2>, {write = true})
 
 command! -nargs=? -range=% -bar
       \ -complete=customlist,s:formatter_complete
-      \ FormatSync lua require("formatter.format").format(<q-args>, <q-mods>, <line1>, <line2>, false, true)
+      \ FormatSync lua require("formatter.format").format(<q-args>, <q-mods>, <line1>, <line2>, {sync = true})
 
 command! -nargs=? -range=% -bar
       \ -complete=customlist,s:formatter_complete
-      \ FormatWriteSync lua require("formatter.format").format(<q-args>, <q-mods>, <line1>, <line2>, true, true)
+	  \ FormatWriteSync lua require("formatter.format").format(<q-args>, <q-mods>, <line1>, <line2>, {write = true, sync = true})

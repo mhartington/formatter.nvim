@@ -4,7 +4,7 @@ local util = require "formatter.util"
 
 local M = {}
 
-function M.format(args, mods, startLine, endLine, write, sync)
+function M.format(args, mods, startLine, endLine, opts)
   if M.saving then
     return
   end
@@ -34,10 +34,14 @@ function M.format(args, mods, startLine, endLine, write, sync)
     end
   end
 
-  M.startTask(configsToRun, startLine, endLine, write, sync)
+  M.startTask(configsToRun, startLine, endLine, opts)
 end
 
-function M.startTask(configs, startLine, endLine, format_then_write, sync)
+function M.startTask(configs, startLine, endLine, opts)
+  opts = opts or {}
+  local format_then_write = opts.write or false
+  local sync = opts.sync or false
+
   local F = {}
   local bufnr = api.nvim_get_current_buf()
   local bufname = api.nvim_buf_get_name(bufnr)
