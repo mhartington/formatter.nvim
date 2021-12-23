@@ -131,7 +131,7 @@ function M.startTask(configs, startLine, endLine, opts)
         cwd = current.config.cwd or vim.fn.getcwd(),
     }
 
-	local job_id = nil
+    local job_id = nil
 
     if current.config.stdin then
       job_id =
@@ -152,7 +152,7 @@ function M.startTask(configs, startLine, endLine, opts)
       tempfiles[job_id] = tempfile_name
     end
 
-    if sync then
+    if opts.sync then
       vim.fn.jobwait({job_id})
     end
   end
@@ -185,7 +185,7 @@ function M.startTask(configs, startLine, endLine, opts)
       util.setLines(bufnr, startLine, endLine, output)
       vim.fn.winrestview(view)
 
-      if format_then_write and bufnr == api.nvim_get_current_buf() then
+      if opts.write and bufnr == api.nvim_get_current_buf() then
         M.saving = true
         vim.api.nvim_command("update")
         M.saving = false
