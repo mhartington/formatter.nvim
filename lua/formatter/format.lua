@@ -38,9 +38,10 @@ function M.format(args, mods, startLine, endLine, opts)
 end
 
 function M.startTask(configs, startLine, endLine, opts)
-  opts = opts or {}
-  local format_then_write = opts.write or false
-  local sync = opts.sync or false
+  opts = vim.tbl_deep_extend("keep", opts or {}, {
+    write = false,
+    sync = false,
+  })
 
   local F = {}
   local bufnr = api.nvim_get_current_buf()
