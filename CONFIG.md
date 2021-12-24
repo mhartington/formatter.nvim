@@ -199,3 +199,23 @@ require("formatter").setup({
   }
 })
 ```
+
+## dart
+
+```lua
+require("formatter").setup({
+  filetype = {
+    dart = {
+      function()
+        return {
+          exe = "dart",
+          args = {
+            "format"
+          },
+          stdin = true
+        }
+      end
+    }
+  }
+})
+```
