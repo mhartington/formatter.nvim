@@ -199,3 +199,21 @@ require("formatter").setup({
   }
 })
 ```
+
+## bibclean
+
+```lua
+require('formatter').setup({
+  filetype = {
+    bib = {
+      function()
+        return {
+          exe = "bibclean", -- this should be available on your $PATH
+          args = {"-align-equals"},
+          stdin = true
+        }
+      end
+    }
+  }
+})
+```
