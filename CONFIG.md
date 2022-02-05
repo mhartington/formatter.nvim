@@ -179,6 +179,24 @@ require('formatter').setup({
 })
 ```
 
+## JSON
+
+```lua
+require("formatter").setup({
+  filetype = {
+    json = {
+      function()
+        return {
+          exe = "prettier",
+          args = {"--stdin-filepath", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)), "--double-quote"},
+          stdin = true
+        }
+      end
+    },
+  }
+})
+```
+
 ## autopep8
 
 ```lua
