@@ -179,6 +179,25 @@ require('formatter').setup({
 })
 ```
 
+## Golang
+
+```lua
+require('formatter').setup({
+  filetype = {
+    -- Configuration for gofmt
+    go = {
+      function()
+        return {
+          exe = "gofmt",
+          args = { "-w" },
+          stdin = false
+        }
+      end
+    },
+  }
+})
+```
+
 ## autopep8
 
 ```lua
