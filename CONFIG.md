@@ -199,3 +199,21 @@ require("formatter").setup({
   }
 })
 ```
+
+## latexindent
+
+```lua
+require("formatter").setup({
+	filetype = {
+		tex = {
+			function()
+				return {
+					exe = "latexindent",
+					args = { "-" },
+					stdin = true,
+				}
+			end,
+		},
+	},
+})
+```
