@@ -99,7 +99,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
 
   function F.run(current)
     if inital_changedtick ~= vim.api.nvim_buf_get_changedtick(bufnr) then
-      util.info("Buffer changed while formatting, skipping")
+      util.debug("Buffer changed while formatting, skipping")
       return
     end
 
