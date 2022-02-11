@@ -272,6 +272,7 @@ require("formatter").setup({
       end
     }
   }
+```
 
 ## latexindent
 
