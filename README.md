@@ -36,10 +36,13 @@ This mean things will run in the order you list them, keep this in mind.
 
 Each formatter should return a table that consist of:
 
-- `exe`: the program you wish to run
-- `args`: a table of args to pass
-- `stdin`: If it should use stdin or not.
-- `cwd` : The path to run the program from.
+- `exe`: the program you wish to run.
+- `args`: a table of args to pass. (optional)
+- `stdin`: If it should use stdin or not. (optional)
+- `cwd` : The path to run the program from. (optional)
+- `try_node_modules`: Tries to run a formatter from locally install npm packages
+  (optional) (to be implemented)
+- `no_append` : Don't append the path of the file to the formatter command. (optional)
 - `ignore_exitcode` : Set to true if the program expects non-zero success exit code (optional)
 - `tempfile_dir`: directory for temp file when not using stdin (optional)
 - `tempfile_prefix`: prefix for temp file when not using stdin (optional)

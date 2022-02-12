@@ -1,15 +1,38 @@
 local M = {}
 
+local util = require("formatter.util")
+
+function M.luaformatter()
+  return {
+    exe = "luaformatter",
+  }
+end
+
+function M.luafmt()
+  return {
+    exe = "luafmt",
+    args = { "--stdin" },
+    stdin = true,
+  }
+end
+
+function M.luaformat()
+  return {
+    exe = "lua-format",
+  }
+end
+
 function M.stylua()
   return {
-    exe = 'stylua',
+    exe = "stylua",
     args = {
-      '--search-parent-directories',
-      '--stdin-filepath',
-      vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)),
-      '--',
-      '-'
-    }
+      "--search-parent-directories",
+      "--stdin-filepath",
+      util.escape_path(util.get_current_buffer_file_path()),
+      "--",
+      "-",
+    },
+    stdin = true,
   }
 end
 

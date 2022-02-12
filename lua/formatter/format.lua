@@ -1,6 +1,6 @@
 local api = vim.api
-local config = require "formatter.config"
-local util = require "formatter.util"
+local config = require("formatter.config")
+local util = require("formatter.util")
 
 local M = {}
 
@@ -15,7 +15,6 @@ function M.format(args, mods, startLine, endLine, write)
   local filetype = vim.bo.filetype
   local formatters = config.values.filetype[filetype]
 
-
   if not modifiable then
     util.info("Buffer is not modifiable")
     return
@@ -27,10 +26,22 @@ function M.format(args, mods, startLine, endLine, write)
     util.error(string.format("No formatter defined for %s files", filetype))
     return
   end
+
   for _, val in ipairs(formatters) do
     local tmp = val()
-    if userPassedFmt == nil or userPassedFmt[tmp.exe] then
-      table.insert(configsToRun, {config = tmp, name = tmp.exe})
+
+    if tmp.exe == nil then
+      util.print(
+        string.format(
+          "Executable option not set for formatter config of filetype %s. "
+            + "Please set the 'exe' option for the formatter config.",
+          filetype
+        )
+      )
+    else
+      if userPassedFmt == nil or userPassedFmt[tmp.exe] then
+        table.insert(configsToRun, { config = tmp, name = tmp.exe })
+      end
     end
   end
 
@@ -50,10 +61,12 @@ function M.startTask(configs, startLine, endLine, format_then_write)
   local currentOutput
   local buf_skip_format = util.getBufVar(bufnr, "formatter_skip_buf") or false
   local tempfiles = {}
+
   if buf_skip_format then
     util.info("Formatting turn off for buffer")
     return
   end
+
   function F.on_event(job_id, data, event)
     if event == "stdout" then
       if data[#data] == "" then
@@ -84,7 +97,12 @@ function M.startTask(configs, startLine, endLine, format_then_write)
       -- Failed to run, stop the loop
       if not ignore_exitcode and data > 0 then
         if errOutput then
-          util.error(string.format("failed to run formatter %s", name .. ". " .. table.concat(errOutput)))
+          util.error(
+            string.format(
+              "failed to run formatter %s",
+              name .. ". " .. table.concat(errOutput)
+            )
+          )
         end
       end
 
@@ -105,43 +123,36 @@ function M.startTask(configs, startLine, endLine, format_then_write)
 
     name = current.name
     ignore_exitcode = current.config.ignore_exitcode
-    local cmd = {current.config.exe}
+    local cmd = { current.config.exe }
     if current.config.args ~= nil then
       for _, arg in ipairs(current.config.args) do
         table.insert(cmd, arg)
       end
     end
 
-    if current.config.stdin == nil then
-      util.print(string.format("Stdin option is not set for %s. Please set stdin to either true or false", name))
-      return
-    end
-
     local job_options = {
-        on_stderr = F.on_event,
-        on_stdout = F.on_event,
-        on_exit = F.on_event,
-        stdout_buffered = true,
-        stderr_buffered = true,
-        cwd = current.config.cwd or vim.fn.getcwd(),
+      on_stderr = F.on_event,
+      on_stdout = F.on_event,
+      on_exit = F.on_event,
+      stdout_buffered = true,
+      stderr_buffered = true,
+      cwd = current.config.cwd or vim.fn.getcwd(),
     }
 
     if current.config.stdin then
-      local job_id =
-        vim.fn.jobstart(
-        table.concat(cmd, " "),
-       job_options
-      )
+      local job_id = vim.fn.jobstart(table.concat(cmd, " "), job_options)
       vim.fn.chansend(job_id, output)
       vim.fn.chanclose(job_id, "stdin")
     else
-      local tempfile_name = util.create_temp_file(bufname, output, current.config)
-      table.insert(cmd, tempfile_name)
-      local job_id =
-        vim.fn.jobstart(
-        table.concat(cmd, " "),
-        job_options
+      local tempfile_name = util.create_temp_file(
+        bufname,
+        output,
+        current.config
       )
+      if not current.config.no_append then
+        table.insert(cmd, tempfile_name)
+      end
+      local job_id = vim.fn.jobstart(table.concat(cmd, " "), job_options)
       tempfiles[job_id] = tempfile_name
     end
   end
@@ -167,7 +178,11 @@ function M.startTask(configs, startLine, endLine, format_then_write)
       local view = vim.fn.winsaveview()
       if not output then
         util.error(
-          string.format("Formatter: Formatted code not found. You may need to change the stdin setting of %s.", name)
+          string.format(
+            "Formatter: Formatted code not found. "
+              + "You may need to change the stdin setting of %s.",
+            name
+          )
         )
         return
       end
@@ -184,11 +199,9 @@ function M.startTask(configs, startLine, endLine, format_then_write)
     end
 
     util.fireEvent("FormatterPost")
-    return
   end
 
   -- AND start the loop
-
   util.fireEvent("FormatterPre")
   F.step()
 end
