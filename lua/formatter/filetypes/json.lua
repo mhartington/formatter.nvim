@@ -10,18 +10,6 @@ function M.jsbeautify()
   }
 end
 
-function M.clangformat()
-  return {
-    exe = "clang-format",
-    args = {
-      "-assume-filename",
-      util.escape_path(util.get_current_buffer_file_name()),
-    },
-    stdin = true,
-    try_node_modules = true,
-  }
-end
-
 function M.prettydiff()
   return {
     exe = "prettydiff",
@@ -36,11 +24,10 @@ function M.prettydiff()
   }
 end
 
-function M.esformatter()
+function M.jq()
   return {
-    exe = "esformatter",
-    stdin = 1,
-    try_node_modules = true,
+    exe = "jq",
+    args = ".",
   }
 end
 
@@ -52,6 +39,7 @@ function M.prettier()
       util.escape_path(util.get_current_buffer_file_path()),
     },
     stdin = true,
+    try_node_modules = true,
   }
 end
 
@@ -60,40 +48,14 @@ function M.prettierd()
     exe = "prettierd",
     args = { util.escape_path(util.get_current_buffer_file_path()) },
     stdin = true,
-  }
-end
-
-function M.prettiereslint()
-  return {
-    exe = "prettier-eslint",
-    args = {
-      "--stdin",
-      "--stdin-filepath",
-      util.escape_path(util.get_current_buffer_file_path()),
-    },
-    stdin = true,
     try_node_modules = true,
   }
 end
 
-function M.eslint_d()
+function M.fixjson()
   return {
-    exe = "eslint_d",
-    args = {
-      "--stdin",
-      "--stdin-filename",
-      util.escape_path(util.get_current_buffer_file_path()),
-      "--fix-to-stdout",
-    },
-    stdin = true,
-    try_node_modules = true,
-  }
-end
-
-function M.standard()
-  return {
-    exe = "standard",
-    args = { "--stdin", "--fix" },
+    exe = "fixjson",
+    args = { "--stdin-filename", util.get_current_buffer_file_name() },
     stdin = true,
     try_node_modules = true,
   }
@@ -104,15 +66,6 @@ function M.denofmt()
     exe = "deno",
     args = { "fmt", "-" },
     stdin = true,
-  }
-end
-
-function M.semistandard()
-  return {
-    exe = "semistandard",
-    args = { "--stdin", "--fix" },
-    stdin = true,
-    try_node_modules = true,
   }
 end
 
