@@ -1,31 +1,28 @@
-*formatter.txt*  Format runner.
-                                                                   *formatter*
+*formatter.txt*  Format runner.                         *formatter* *formatter.nvim*
 
-A format runner for Neovim.
+We want to thank the `neoformat` <https://github.com/sbdchd/neoformat>
+contributors for developing a lot of formatter configurations that we used as
+a reference to create our own opt-in default formatter configurations.
 
-We want to thank the `neoformat` contributors for developing a lot of formatter
-configurations that we used as a reference to create our own opt-in default
-formatter configurations.
-
-    License   :    MIT License
+    Author    :    Mike Hartington <https://github.com/mhartington>
     Homepage  :    https://github.com/mhartington/formatter.nvim
 
 
 ==============================================================================
-                                                          *formatter_contents*
+                                                            *formatter-contents*
 
 CONTENTS
 
-    1. Features ................................ |formatter_features|
-    2. Install ................................. |formatter_install|
-    3. Configure ............................... |formatter_configure|
-			3.1. Configuration specification ......... |formatter_config_spec|
-    4. Contribute .............................. |formatter_contribute|
-			4.1. Default configurations .............. |formatter_contrib_formatters|
+    1. Features ................................ |formatter-features|
+    2. Install ................................. |formatter-install|
+    3. Configure ............................... |formatter-configure|
+			3.1. Configuration specification ......... |formatter-config-spec|
+    4. Contribute .............................. |formatter-contribute|
+			4.1. Default configurations .............. |formatter-contrib-formatters|
 
 
 ==============================================================================
-                                                            *formatter_features*
+                                                            *formatter-features*
 
 1. Features ~
 
@@ -35,7 +32,7 @@ CONTENTS
 
 
 ==============================================================================
-                                                            *formatter_install*
+                                                             *formatter-install*
 
 2. Install ~
 
@@ -66,7 +63,7 @@ With `dein.vim`:
 <
 
 ==============================================================================
-                                                           *formatter_configure*
+                                                           *formatter-configure*
 
 3. Configure ~
 
@@ -100,23 +97,9 @@ Setup:
 			}
 		}
 	}
-
-	-- Keymap
-	vim.cmd [[
-	nnoremap <silent> <leader>f :Format<CR>
-	nnoremap <silent> <leader>F :FormatWrite<CR>
-	]]
-
-	-- Format and write after save asynchronously
-	vim.cmd [[
-	augroup FormatAutogroup
-		autocmd!
-		autocmd BufWritePost * FormatWrite
-	augroup END
-	]]
 <
 
-                                                       *formatter_preconfigured*
+                                                       *formatter-preconfigured*
 
 By default, there are no preconfigured formatters, however there are opt-in
 default configurations (lua/formatter/filetypes) as shown in the snippet
@@ -129,23 +112,23 @@ You can use the default configurations (lua/formatter/filetypes) as a
 starting point for creating your configurations. Feel free to contribute to
 this repository by creating or improving default configurations that
 everyone can use! The guide for contributing to default configurations is
-below (|formatter_contrib_formatters|).
+below (|formatter-contrib-formatters|).
 
 
-                                                                *formatter_util*
+                                                                *formatter-util*
 
 You can use the `util` module (lua/formatter/util) which has various
 functions that help with creating default configurations as shown above.
 
 
-                                                            *formatter_map_keys*
+                                                            *formatter-map-keys*
 Map keys:
 >
 	nnoremap <silent> <leader>f :Format<CR>
 	nnoremap <silent> <leader>F :FormatWrite<CR>
 <
 
-                                                   *formatter_format_after_save*
+                                                   *formatter-format-after-save*
 Format and write after save asynchronously:
 >
 	augroup FormatAutogroup
@@ -155,7 +138,7 @@ Format and write after save asynchronously:
 <
 
 ------------------------------------------------------------------------------
-                                                         *formatter_config_spec*
+                                                         *formatter-config-spec*
 
 3.1. Configuration specification ~
 
@@ -181,7 +164,7 @@ Each formatter configuration should return a table that consist of:
 - `tempfile_postfix`: postfix for temp file when not using `stdin` (optional)
 
 
-                                                                 *formatter_cwd*
+                                                                 *formatter-cwd*
 
 The `cwd` argument can be used for in example monolithic projects which contain
 sources with different styles. Setting `cwd` to the path of the file being
@@ -189,14 +172,14 @@ formatted causes, for example, `clang-format` to search for the nearest
 `.clang-format` file in the file's parent directories.
 
 
-                                                    *formatter_try_node_modules*
+                                                    *formatter-try-node-modules*
 
 The `try_node_modules` argument is not yet implemented, but feel free to use
 this argument in your configurations, so that when we add support for it, you
 get the `node_modules` package scanning functionality automatically.
 
 
-                                                           *formatter_no_append*
+                                                           *formatter-no-append*
 
 The `no_append` argument is important for formatters that don't take the path
 to the formatted file as the last argument. A small minority of formatters take
@@ -206,13 +189,13 @@ default `javascript` `prettydiff` configuration
 
 
 ==============================================================================
-                                                          *formatter_contribute*
+                                                          *formatter-contribute*
 
 4. Contribute ~
 
 
 ------------------------------------------------------------------------------
-                                                  *formatter_contrib_formatters*
+                                                  *formatter-contrib-formatters*
 
 3.1. Default configurations ~
 
