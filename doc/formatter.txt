@@ -16,9 +16,9 @@ CONTENTS
     1. Features ................................ |formatter-features|
     2. Install ................................. |formatter-install|
     3. Configure ............................... |formatter-configure|
-			3.1. Configuration specification ......... |formatter-config-spec|
+      3.1. Configuration specification ......... |formatter-config-spec|
     4. Contribute .............................. |formatter-contribute|
-			4.1. Default configurations .............. |formatter-contrib-formatters|
+      4.1. Default configurations .............. |formatter-contrib-formatters|
 
 
 ==============================================================================
@@ -38,28 +38,28 @@ CONTENTS
 
 With `packer.nvim`:
 >
-	require('packer').use { 'mhartington/formatter.nvim' }
+  require('packer').use { 'mhartington/formatter.nvim' }
 <
 With `paq-nvim`:
 >
-	require("paq") { 'mhartington/formatter.nvim' }
+  require("paq") { 'mhartington/formatter.nvim' }
 
 With `vim-plug`:
 >
-	Plug 'mhartington/formatter.nvim'
+  Plug 'mhartington/formatter.nvim'
 
 With `Vundle.vim`:
 >
-	Plugin 'mhartington/formatter.nvim'
+  Plugin 'mhartington/formatter.nvim'
 
 With `vim-pathogen`:
 >
-	cd ~/.vim/bundle && \
-	git clone https://github.com/mhartington/formatter.nvim
+  cd ~/.vim/bundle && \
+  git clone https://github.com/mhartington/formatter.nvim
 <
 With `dein.vim`:
 >
-	call dein#add('mhartington/formatter.nvim')
+  call dein#add('mhartington/formatter.nvim')
 <
 
 ==============================================================================
@@ -69,34 +69,34 @@ With `dein.vim`:
 
 Setup:
 >
-	-- Utilities for creating configurations
-	local util = require "formatter.util"
+  -- Utilities for creating configurations
+  local util = require "formatter.util"
 
-	-- Provides the Format and FormatWrite commands
-	require('formatter').setup {
-		-- All formatter configurations are opt-in
-		filetype = {
-			lua = {
-				-- Pick from defaults:
-				require('formatter.filetypes.lua').stylua,
+  -- Provides the Format and FormatWrite commands
+  require('formatter').setup {
+    -- All formatter configurations are opt-in
+    filetype = {
+      lua = {
+        -- Pick from defaults:
+        require('formatter.filetypes.lua').stylua,
 
-				-- ,or define your own:
-				function()
-					return {
-						exe = "stylua",
-						args = {
-							"--search-parent-directories",
-							"--stdin-filepath",
-							util.escape_path(util.get_current_buffer_file_path()),
-							"--",
-							"-",
-						},
-						stdin = true,
-					}
-				end
-			}
-		}
-	}
+        -- ,or define your own:
+        function()
+          return {
+            exe = "stylua",
+            args = {
+              "--search-parent-directories",
+              "--stdin-filepath",
+              util.escape_path(util.get_current_buffer_file_path()),
+              "--",
+              "-",
+            },
+            stdin = true,
+          }
+        end
+      }
+    }
+  }
 <
 
                                                        *formatter-preconfigured*
@@ -124,17 +124,17 @@ functions that help with creating default configurations as shown above.
                                                             *formatter-map-keys*
 Map keys:
 >
-	nnoremap <silent> <leader>f :Format<CR>
-	nnoremap <silent> <leader>F :FormatWrite<CR>
+  nnoremap <silent> <leader>f :Format<CR>
+  nnoremap <silent> <leader>F :FormatWrite<CR>
 <
 
                                                    *formatter-format-after-save*
 Format and write after save asynchronously:
 >
-	augroup FormatAutogroup
-		autocmd!
-		autocmd BufWritePost * FormatWrite
-	augroup END
+  augroup FormatAutogroup
+    autocmd!
+    autocmd BufWritePost * FormatWrite
+  augroup END
 <
 
 ------------------------------------------------------------------------------
@@ -208,26 +208,26 @@ For example, the default configuration of the `prettier` formatter for the
 `javascript` `filetype` would be placed in `lua/formatter/filetypes/javascript.lua`
 as such:
 >
-	local M = {}
+  local M = {}
 
-	local util = require("formatter.util")
+  local util = require("formatter.util")
 
-	-- other formatters...
+  -- other formatters...
 
-	function M.prettier()
-		return {
-			exe = "prettier",
-			args = {
-				"--stdin-filepath",
-				util.escape_path(util.get_current_buffer_file_path()),
-			},
-			stdin = true,
-		}
-	end
+  function M.prettier()
+    return {
+      exe = "prettier",
+      args = {
+        "--stdin-filepath",
+        util.escape_path(util.get_current_buffer_file_path()),
+      },
+      stdin = true,
+    }
+  end
 
-	-- other formatters...
+  -- other formatters...
 
-	return M
+  return M
 <
 
-vim:tw=78:ts=2:noet:ft=help:norl:
+vim:tw=78:ts=2:sh=2:sts=2:sr:et:ai:ft=help:norl:
