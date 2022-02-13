@@ -14,22 +14,40 @@ a reference to create our own opt-in default formatter configurations.
 
 ## Install
 
+With [`packer.nvim`](https://github.com/wbthomason/packer.nvim):
 ```lua
--- packer.nvim
 require('packer').use { 'mhartington/formatter.nvim' }
+```
 
--- vim-plug
-vim.cmd [[
+With [`paq-nvim`](https://github.com/savq/paq-nvim):
+```lua
+require("paq") { 'mhartington/formatter.nvim' }
+```
+
+With [`vim-plug`](https://github.com/junegunn/vim-plug):
+```vim
 Plug 'mhartington/formatter.nvim'
-]]
+```
 
--- dein.nvim
-vim.cmd [[
+With [`Vundle.vim`](https://github.com/VundleVim/Vundle.vim):
+```vim
+Plugin 'mhartington/formatter.nvim'
+```
+
+With [`vim-pathogen`](https://github.com/tpope/vim-pathogen):
+```shell
+cd ~/.vim/bundle && \
+git clone https://github.com/mhartington/formatter.nvim
+```
+
+With [`dein.vim`](https://github.com/Shougo/dein.vim):
+```vim
 call dein#add('mhartington/formatter.nvim')
-]]
 ```
 
 ## Configure
+
+Setup:
 
 ```lua
 -- Utilities for creating configurations
@@ -60,20 +78,6 @@ require('formatter').setup {
     }
   }
 }
-
--- Keymap
-vim.cmd [[
-nnoremap <silent> <leader>f :Format<CR>
-nnoremap <silent> <leader>F :FormatWrite<CR>
-]]
-
--- Format and write after save asynchronously
-vim.cmd [[
-augroup FormatAutogroup
-  autocmd!
-  autocmd BufWritePost * FormatWrite
-augroup END
-]]
 ```
 
 By default, there are no preconfigured formatters, however there are opt-in
@@ -91,6 +95,22 @@ below.
 
 You can use the [`util` module](lua/formatter/util) which has various
 functions that help with creating default configurations as shown above.
+
+Map keys:
+```vim
+nnoremap <silent> <leader>f :Format<CR>
+nnoremap <silent> <leader>F :FormatWrite<CR>
+```
+
+Format and write after save asynchronously:
+```vim
+vim.cmd [[
+augroup FormatAutogroup
+  autocmd!
+  autocmd BufWritePost * FormatWrite
+augroup END
+]]
+```
 
 ### Configuration specification
 
