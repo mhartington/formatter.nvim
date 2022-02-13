@@ -23,6 +23,22 @@ function M.isort()
   }
 end
 
+function M.docformatter()
+  return {
+    exe = "docformatter",
+    args = { "-" },
+    stdin = true,
+  }
+end
+
+function M.black()
+  return {
+    exe = "black",
+    args = { "-q", "-" },
+    stdin = true,
+  }
+end
+
 function M.pyment()
   return {
     exe = "pyment",
