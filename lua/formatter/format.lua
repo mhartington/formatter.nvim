@@ -39,6 +39,7 @@ end
 
 function M.startTask(configs, startLine, endLine, opts)
   opts = vim.tbl_deep_extend("keep", opts or {}, {
+    sync = false,
     write = false,
   })
 
@@ -108,6 +109,10 @@ function M.startTask(configs, startLine, endLine, opts)
       return
     end
 
+    if opts.sync then
+      vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
+    end
+
     name = current.name
     ignore_exitcode = current.config.ignore_exitcode
     local cmd = {current.config.exe}
@@ -166,6 +171,10 @@ function M.startTask(configs, startLine, endLine, opts)
     if inital_changedtick ~= vim.api.nvim_buf_get_changedtick(bufnr) then
       util.print("Buffer changed while formatting, not applying formatting")
       return
+    end
+
+    if opts.sync then
+      vim.api.nvim_buf_set_option(bufnr, "modifiable", true)
     end
 
     if not util.isSame(input, output) then
