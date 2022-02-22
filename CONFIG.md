@@ -180,6 +180,8 @@ require('formatter').setup({
 
 ## HCL (Hashicop Configuration Language)
 
+Reference: https://terragrunt.gruntwork.io/docs/getting-started/configuration/#formatting-hcl-files
+
 ```lua
 -- plugin-config
 require('formatter').setup({
