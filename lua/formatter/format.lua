@@ -4,7 +4,7 @@ local util = require "formatter.util"
 
 local M = {}
 
-function M.format(args, mods, startLine, endLine, write)
+function M.format(args, mods, startLine, endLine, opts)
   if M.saving then
     return
   end
@@ -34,10 +34,15 @@ function M.format(args, mods, startLine, endLine, write)
     end
   end
 
-  M.startTask(configsToRun, startLine, endLine, write)
+  M.startTask(configsToRun, startLine, endLine, opts)
 end
 
-function M.startTask(configs, startLine, endLine, format_then_write)
+function M.startTask(configs, startLine, endLine, opts)
+  opts = vim.tbl_deep_extend("keep", opts or {}, {
+    write = false,
+  })
+
+
   local F = {}
   local bufnr = api.nvim_get_current_buf()
   local bufname = api.nvim_buf_get_name(bufnr)
@@ -174,7 +179,7 @@ function M.startTask(configs, startLine, endLine, format_then_write)
       util.setLines(bufnr, startLine, endLine, output)
       vim.fn.winrestview(view)
 
-      if format_then_write and bufnr == api.nvim_get_current_buf() then
+      if opts.write and bufnr == api.nvim_get_current_buf() then
         M.saving = true
         vim.api.nvim_command("update")
         M.saving = false
