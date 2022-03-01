@@ -178,6 +178,39 @@ require('formatter').setup({
 })
 ```
 
+## HCL (Hashicop Configuration Language)
+
+Reference: https://terragrunt.gruntwork.io/docs/getting-started/configuration/#formatting-hcl-files
+
+```lua
+-- plugin-config
+require('formatter').setup({
+  filetype = {
+    hcl = {
+      function()
+        return {
+          exec = "terragrunt",
+          args = {"hclfmt"},
+          stdin = false
+        }
+      end
+    },
+  }
+})
+
+-- autocmd-config
+vim.api.nvim_exec(
+  [[
+    augroup FormatAutogroup
+      autocmd!
+      autocmd BufWritePost *.hcl,*.tf FormatWrite
+      autocmd BufNewFile,BufRead *.hcl set filetype=terraform syntax=terraform
+    augroup END
+  ]],
+  true
+)
+```
+
 ## Black
 
 ```lua
