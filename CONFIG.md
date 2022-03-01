@@ -234,6 +234,23 @@ require('formatter').setup({
 })
 ```
 
+```lua
+require('formatter').setup({
+  filetype = {
+    -- Configuration for goimports
+    go = {
+      function()
+        return {
+          exe = "goimports",
+          args = {"-w", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0))},
+          stdin = false
+        }
+      end
+    },
+  }
+})
+```
+
 ## autopep8
 
 ```lua
