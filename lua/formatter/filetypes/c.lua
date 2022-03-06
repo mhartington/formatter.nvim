@@ -1,32 +1,15 @@
 local M = {}
 
-local util = require("formatter.util")
-
 function M.uncrustify()
-  return {
-    exe = "uncrustify",
-    args = { "-q", "-l C" },
-    stdin = true,
-  }
+	return require("formatter.defaults.uncrustify")("C")
 end
 
 function M.clangformat()
-  return {
-    exe = "clang-format",
-    args = {
-      "-assume-filename",
-      util.escape_path(util.get_current_buffer_file_name()),
-    },
-    stdin = true,
-  }
+	return require("formatter.defaults.clangformat")()
 end
 
 function M.astyle()
-  return {
-    exe = "astyle",
-    args = { "--mode=c" },
-    stdin = true,
-  }
+	return require("formatter.defaults.astyle")("c")
 end
 
 return M

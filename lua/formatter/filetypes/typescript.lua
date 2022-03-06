@@ -1,58 +1,31 @@
 local M = {}
 
-local util = require("formatter.util")
-
--- TODO: a bit different than neoformat, so should chack that it works
 function M.tsfmt()
-  return {
-    exe = "tsfmt",
-    args = {
-      "--stdin",
-      "--baseDir",
-      util.escape_path(util.get_cwd()),
-    },
-    stdin = true,
-    try_node_modules = true,
-  }
+	return require("formatter.defaults.tsfmt")()
 end
 
 function M.prettier()
-  return {
-    exe = "prettier",
-    args = {
-      "--stdin-filepath",
-      util.escape_path(util.get_current_buffer_file_path()),
-      "--parser",
-      "typescript",
-    },
-    stdin = true,
-    try_node_modules = true,
-  }
+	return require("formatter.defaults.prettier")("typescript")
 end
 
 function M.prettierd()
-  return {
-    exe = "prettierd",
-    args = {
-      util.escape_path(util.get_current_buffer_file_path()),
-    },
-    stdin = 1,
-  }
+	return require("formatter.defaults.prettierd")()
 end
 
 function M.prettiereslint()
-  return {
-    exe = "prettier-eslint",
-    args = {
-      "--stdin",
-      "--stdin-filepath",
-      util.escape_path(util.get_current_buffer_file_path()),
-      "--parser",
-      "typescript",
-    },
-    stdin = true,
-    try_node_modules = true,
-  }
+	return require("formatter.defaults.prettiereslint")("typescript")
+end
+
+function M.eslint_d()
+	return require("formatter.defaults.eslint_d")()
+end
+
+function M.clangformat()
+	return require("formatter.defaults.clangformat")()
+end
+
+function M.denofmt()
+	return require("formatter.defaults.denofmt")()
 end
 
 -- NOTE: tslint is deprecated, so I don't want to add it here from neoformat
@@ -69,38 +42,5 @@ end
 --     try_node_modules = true,
 --   }
 -- end
-
-function M.eslint_d()
-  return {
-    exe = "eslint_d",
-    args = {
-      "--stdin",
-      "--stdin-filename",
-      util.escape_path(util.get_current_buffer_file_path()),
-    },
-    stdin = true,
-    try_node_modules = true,
-  }
-end
-
-function M.clangformat()
-  return {
-    exe = "clang-format",
-    args = {
-      "-assume-filename",
-      util.escape_path(util.get_current_buffer_file_name()),
-    },
-    stdin = true,
-    try_node_modules = true,
-  }
-end
-
-function M.denoformat()
-  return {
-    exe = "deno",
-    args = { "fmt", "-" },
-    stdin = true,
-  }
-end
 
 return M
