@@ -1,20 +1,15 @@
 local M = {}
 
-function M.prettydiff()
-	return require("formatter.defaults.prettydiff")("css")
-end
+local defaults = require("formatter.defaults")
+local util = require("formatter.util")
 
-function M.prettier()
-	return require("formatter.defaults.prettier")("css")
-end
+M.prettydiff = util.withl(defaults.prettydiff, "css")
 
-function M.prettierd()
-	return require("formatter.defaults.prettierd")()
-end
+M.prettier = util.withl(defaults.prettier, "css")
 
-function M.eslint_d()
-	return require("formatter.defaults.eslint_d")()
-end
+M.prettierd = util.copyf(defaults.prettierd)
+
+M.eslint_d = util.copyf(defaults.eslint_d)
 
 function M.stylefmt()
 	return {

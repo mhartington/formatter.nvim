@@ -1,47 +1,28 @@
 local M = {}
 
-function M.jsbeautify()
-	return require("formatter.defaults.jsbeautify")()
-end
+local defaults = require("formatter.defaults")
+local util = require("formatter.util")
 
-function M.clangformat()
-	return require("formatter.defaults.clangformat")()
-end
+M.jsbeautify = util.copyf(defaults.jsbeautify)
 
-function M.prettydiff()
-	return require("formatter.defaults.prettydiff")("javascript")
-end
+M.clangformat = util.copyf(defaults.clangformat)
 
-function M.esformatter()
-	return require("formatter.defaults.esformatter")()
-end
+M.prettydiff = util.withl(defaults.prettydiff, "javascript")
 
-function M.prettier()
-	return require("formatter.defaults.prettier")()
-end
+M.esformatter = util.copyf(defaults.esformatter)
 
-function M.prettierd()
-	return require("formatter.defaults.prettierd")()
-end
+M.prettier = util.copyf(defaults.prettier)
 
-function M.prettiereslint()
-	return require("formatter.defaults.prettiereslint")()
-end
+M.prettierd = util.copyf(defaults.prettierd)
 
-function M.eslint_d()
-	return require("formatter.defaults.eslint_d")()
-end
+M.prettiereslint = util.copyf(defaults.prettiereslint)
 
-function M.standard()
-	return require("formatter.defaults.standard")()
-end
+M.eslint_d = util.copyf(defaults.eslint_d)
 
-function M.denofmt()
-	return require("formatter.defaults.denofmt")()
-end
+M.standard = util.copyf(defaults.standard)
 
-function M.semistandard()
-	return require("formatter.defaults.semistandard")()
-end
+M.denofmt = util.copyf(defaults.denofmt)
+
+M.semistandard = util.copyf(defaults.semistandard)
 
 return M

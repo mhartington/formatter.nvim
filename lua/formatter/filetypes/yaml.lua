@@ -1,12 +1,11 @@
 local M = {}
 
-function M.prettier()
-	return require("formatter.defaults.prettier")("yaml")
-end
+local defaults = require("formatter.defaults")
+local util = require("formatter.util")
 
-function M.prettierd()
-	return require("formatter.defaults.prettierd")()
-end
+M.prettier = util.withl(defaults.prettier, "yaml")
+
+M.prettierd = util.copyf(defaults.prettierd)
 
 function M.pyaml()
 	return {

@@ -1,7 +1,8 @@
 local M = {}
 
-function M.prettier()
-	return require("formatter.defaults.prettier")()
-end
+local defaults = require("formatter.defaults")
+local util = require("formatter.util")
+
+M.prettier = util.copyf(defaults.prettier)
 
 return M

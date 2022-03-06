@@ -1,15 +1,12 @@
 local M = {}
 
-function M.uncrustify()
-	return require("formatter.defaults.uncrustify")("C")
-end
+local defaults = require("formatter.defaults")
+local util = require("formatter.util")
 
-function M.clangformat()
-	return require("formatter.defaults.clangformat")()
-end
+M.uncrustify = util.withl(defaults.uncrustify, "C")
 
-function M.astyle()
-	return require("formatter.defaults.astyle")("c")
-end
+M.clangformat = util.copyf(defaults.clangformat)
+
+M.astyle = util.withl(defaults.astyle, "c")
 
 return M

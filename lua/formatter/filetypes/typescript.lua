@@ -1,32 +1,21 @@
 local M = {}
 
-function M.tsfmt()
-	return require("formatter.defaults.tsfmt")()
-end
+local defaults = require("formatter.defaults")
+local util = require("formatter.util")
 
-function M.prettier()
-	return require("formatter.defaults.prettier")("typescript")
-end
+M.tsfmt = util.copyf(defaults.tsfmt)
 
-function M.prettierd()
-	return require("formatter.defaults.prettierd")()
-end
+M.prettier = util.withl(defaults.prettier, "typescript")
 
-function M.prettiereslint()
-	return require("formatter.defaults.prettiereslint")("typescript")
-end
+M.prettierd = util.copyf(defaults.prettierd)
 
-function M.eslint_d()
-	return require("formatter.defaults.eslint_d")()
-end
+M.prettiereslint = util.withl(defaults.prettiereslint, "typescript")
 
-function M.clangformat()
-	return require("formatter.defaults.clangformat")()
-end
+M.eslint_d = util.copyf(defaults.eslint_d)
 
-function M.denofmt()
-	return require("formatter.defaults.denofmt")()
-end
+M.clangformat = util.copyf(defaults.clangformat)
+
+M.denofmt = util.copyf(defaults.denofmt)
 
 -- NOTE: tslint is deprecated, so I don't want to add it here from neoformat
 -- function M.tslint()

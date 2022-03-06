@@ -1,16 +1,13 @@
 local M = {}
 
-function M.prettier()
-	return require("formatter.defaults.prettier")()
-end
+local defaults = require("formatter.defaults")
+local util = require("formatter.util")
 
-function M.prettierd()
-	return require("formatter.defaults.prettierd")()
-end
+M.prettier = util.copyf(defaults.prettier)
 
-function M.prettydiff()
-	return require("formatter.defaults.prettydiff")("html")
-end
+M.prettierd = util.copyf(defaults.prettierd)
+
+M.prettydiff = util.withl(defaults.prettydiff, "html")
 
 function M.tidy()
 	return {

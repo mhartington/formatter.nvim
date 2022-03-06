@@ -1,26 +1,17 @@
 local M = {}
 
+local defaults = require("formatter.defaults")
 local util = require("formatter.util")
 
-function M.jsbeautify()
-	return require("formatter.defaults.jsbeautify")()
-end
+M.jsbeautify = util.copyf(defaults.jsbeautify)
 
-function M.prettydiff()
-	return require("formatter.defaults.prettydiff")("javascript")
-end
+M.prettydiff = util.withl(defaults.prettydiff, "javascript")
 
-function M.prettier()
-	return require("formatter.defaults.prettier")()
-end
+M.prettier = util.copyf(defaults.prettier)
 
-function M.prettierd()
-	return require("formatter.defaults.prettierd")()
-end
+M.prettierd = util.copyf(defaults.prettierd)
 
-function M.denofmt()
-	return require("formatter.defaults.denofmt")()
-end
+M.denofmt = util.copyf(defaults.denofmt)
 
 function M.jq()
 	return {
