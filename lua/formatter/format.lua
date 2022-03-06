@@ -141,7 +141,9 @@ function M.startTask(configs, startLine, endLine, opts)
       vim.fn.chanclose(job_id, "stdin")
     else
       local tempfile_name = util.create_temp_file(bufname, output, current.config)
-      table.insert(cmd, tempfile_name)
+      if not current.config.no_append then
+        table.insert(cmd, tempfile_name)
+      end
       local job_id =
         vim.fn.jobstart(
         table.concat(cmd, " "),
