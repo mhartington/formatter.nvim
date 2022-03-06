@@ -4,8 +4,9 @@
 
 local M = {}
 
-local this_script_path = vim.fn.expand("%")
-local this_script_dir = vim.fn.fnamemodify(this_script_path, ":h")
+-- NOTE: https://stackoverflow.com/questions/6380820/get-containing-path-of-lua-file
+local this_script_path = debug.getinfo(1).source:match("@?(.*/)")
+local this_script_dir = vim.fn.fnamemodify(this_script_path, ":p:h")
 local this_script_dir_script_paths = vim.fn.split(vim.fn.glob(this_script_dir .. "/*.lua"), "\n")
 
 for _, script_path in ipairs(this_script_dir_script_paths) do
