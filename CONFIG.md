@@ -258,7 +258,6 @@ require('formatter').setup({
       function()
         return {
           exe = "gofmt",
-          args = { "-w" },
           stdin = true
         }
       end
