@@ -59,7 +59,7 @@ function M.startTask(configs, startLine, endLine, opts)
     util.info("Formatting turn off for buffer")
     return
   end
-  function F.on_event(transform, job_id, data, event)
+  function F.on_event(job_id, data, event)
     if event == "stdout" then
       if data[#data] == "" then
         data[#data] = nil
@@ -96,7 +96,7 @@ function M.startTask(configs, startLine, endLine, opts)
       -- Success
       if ignore_exitcode or data == 0 then
         util.info(string.format("Finished running %s", name))
-        output = transform and transform(currentOutput) or currentOutput
+        output = currentOutput
       end
       F.step()
     end
@@ -122,13 +122,10 @@ function M.startTask(configs, startLine, endLine, opts)
       return
     end
 
-    local on_event = function(...)
-      F.on_event(current.config.transform, ...)
-    end
     local job_options = {
-        on_stderr = on_event,
-        on_stdout = on_event,
-        on_exit = on_event,
+        on_stderr = F.on_event,
+        on_stdout = F.on_event,
+        on_exit = F.on_event,
         stdout_buffered = true,
         stderr_buffered = true,
         cwd = current.config.cwd or vim.fn.getcwd(),
