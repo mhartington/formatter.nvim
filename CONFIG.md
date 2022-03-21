@@ -306,7 +306,7 @@ require("formatter").setup({
 
 ## dart
 
-````lua
+```lua
 require("formatter").setup({
   filetype = {
     dart = {
@@ -321,22 +321,23 @@ require("formatter").setup({
       end
     }
   }
+})
 ```
 
 ## latexindent
 
 ```lua
 require("formatter").setup({
-	filetype = {
-		tex = {
-			function()
-				return {
-					exe = "latexindent",
-					args = { "-" },
-					stdin = true,
-				}
-			end,
-		},
-	},
-})
-````
+   filetype = {
+     tex = {
+       function()
+         return {
+           exe = "latexindent",
+           args = {"-"},
+           stdin = true
+         }
+       end
+     }
+   }
+ })
+```
