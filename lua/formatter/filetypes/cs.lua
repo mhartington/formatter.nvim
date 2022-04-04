@@ -9,4 +9,14 @@ M.clangformat = util.copyf(defaults.clangformat)
 
 M.astyle = util.withl(defaults.astyle, "cs")
 
+M.dotnetformat = function()
+	return {
+		exe = "dotnet",
+		args = {
+      "format",
+			"--include"
+		}
+	}
+end
+
 return M
