@@ -13,9 +13,11 @@ M.dotnetformat = function()
 	return {
 		exe = "dotnet",
 		args = {
-      "format",
-			"--include"
-		}
+			"format",
+			"whitespace",
+			"--include",
+		},
+		stdin = false,
 	}
 end
 
