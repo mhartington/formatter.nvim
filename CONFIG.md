@@ -258,7 +258,6 @@ require('formatter').setup({
       function()
         return {
           exe = "gofmt",
-          args = { "-w" },
           stdin = true
         }
       end
@@ -307,7 +306,7 @@ require("formatter").setup({
 
 ## dart
 
-````lua
+```lua
 require("formatter").setup({
   filetype = {
     dart = {
@@ -322,22 +321,43 @@ require("formatter").setup({
       end
     }
   }
+})
 ```
 
 ## latexindent
 
 ```lua
 require("formatter").setup({
-	filetype = {
-		tex = {
-			function()
-				return {
-					exe = "latexindent",
-					args = { "-" },
-					stdin = true,
-				}
-			end,
-		},
-	},
-})
-````
+   filetype = {
+     tex = {
+       function()
+         return {
+           exe = "latexindent",
+           args = {"-"},
+           stdin = true
+         }
+       end
+     }
+   }
+ })
+```
+
+## prisma-fmt
+
+```lua
+require("formatter").setup(
+  {
+    filetype = {
+      prisma = {
+        function()
+          return {
+            exe = "prisma-fmt",
+            args = {"format", "-i", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0))},
+            stdin = true
+          }
+        end
+      }
+    }
+  }
+)
+```
