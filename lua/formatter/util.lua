@@ -175,4 +175,59 @@ function util.read_temp_file(tempfile_name)
 
   return lines
 end
+-- NOTE: change as needed
+function util.get_cwd()
+	return vim.fn.getcwd()
+end
+
+-- NOTE: change as needed
+function util.get_current_buffer_file_path()
+	return vim.api.nvim_buf_get_name(0)
+end
+
+function util.get_current_buffer_file_name()
+	return vim.fn.fnamemodify(util.get_current_buffer_file_path(), ":t")
+end
+
+function util.get_current_buffer_file_dir()
+	return vim.fn.fnamemodify(util.get_current_buffer_file_path(), ":h")
+end
+
+-- NOTE: change as needed
+function util.quote_cmd_arg(arg)
+	return string.format('"%s"', arg)
+end
+
+-- NOTE: fnameescape or shellescape?
+function util.escape_path(arg)
+	return vim.fn.fnameescape(arg)
+end
+
+-- TODO: check that this is okay for paths and ordinary strings
+function util.format_prettydiff_arg(name, value)
+	return string.format('%s:"%s"', name, value)
+end
+
+function util.withl(f, ...)
+	local argsl = { ... }
+	return function(...)
+		local argsr = { ... }
+		return f(unpack(argsl), unpack(argsr))
+	end
+end
+
+function util.withr(f, ...)
+	local argsr = { ... }
+	return function(...)
+		local argsl = { ... }
+		return f(unpack(argsl), unpack(argsr))
+	end
+end
+
+function util.copyf(f)
+	return function(...)
+		return f(...)
+	end
+end
+
 return util
