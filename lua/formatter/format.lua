@@ -29,7 +29,7 @@ function M.format(args, mods, startLine, endLine, opts)
   end
   for _, val in ipairs(formatters) do
     local tmp = val()
-    if userPassedFmt == nil or userPassedFmt[tmp.exe] then
+    if tmp and tmp.exe and (userPassedFmt == nil or userPassedFmt[tmp.exe]) then
       table.insert(configsToRun, {config = tmp, name = tmp.exe})
     end
   end
