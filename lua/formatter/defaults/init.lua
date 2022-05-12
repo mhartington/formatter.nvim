@@ -14,7 +14,7 @@ local this_script_dir_script_paths = vim.fn.split(
 
 for _, script_path in ipairs(this_script_dir_script_paths) do
   local script_name = vim.fn.fnamemodify(script_path, ":t:r")
-  if not (script_name == "init") then
+  if script_name ~= "init" then
     M[script_name] = require("formatter.defaults." .. script_name)
   end
 end
