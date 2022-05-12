@@ -81,20 +81,25 @@ require('formatter').setup {
 ```
 
 By default, there are no preconfigured formatters, however there are opt-in
-[default configurations](lua/formatter/filetypes) as shown in the snippet
-above. It is hard to predict what everyone wants, but at the same time we
-realize that most formatter configurations are the same. See the discussion in
+[default configurations per `filetype`](lua/formatter/filetypes)
+and [default configurations per formatter](lua/formatter/defaults)
+as shown in the snippet above. It is hard to predict what everyone wants, but
+at the same time we realize that most formatter configurations are the same.
+See the discussion in
 [#97](https://github.com/mhartington/formatter.nvim/issues/97) for more
 information.
 
-You can use the [default configurations](lua/formatter/filetypes) as a
-starting point for creating your configurations. Feel free to contribute to
-this repository by creating or improving default configurations that
-everyone can use! The guide for contributing to default configurations is
-below.
+You can use the [default configurations per `filetype`](lua/formatter/filetypes)
+and [default configurations per formatter](lua/formatter/defaults)
+as a starting point for creating your configurations.
+Feel free to contribute to this repository by creating or improving default
+configurations that everyone can use! The guide for contributing to default
+configurations is below.
 
 You can use the [`util` module](lua/formatter/util) which has various
 functions that help with creating default configurations as shown above.
+
+<!-- TODO: with lua callbacks -->
 
 Map keys:
 ```vim
@@ -104,12 +109,10 @@ nnoremap <silent> <leader>F :FormatWrite<CR>
 
 Format and write after save asynchronously:
 ```vim
-vim.cmd [[
 augroup FormatAutogroup
   autocmd!
   autocmd BufWritePost * FormatWrite
 augroup END
-]]
 ```
 
 ### Configuration specification
@@ -117,7 +120,8 @@ augroup END
 Each formatter configuration is a function that returns a table. Because
 each entry is a function, the tables for each `filetype` act as an ordered list
 (or array). This means things run in the order you list them, keep this
-in mind.
+in mind. You can also return `nil` from these functions to conditionally apply
+formatters.
 
 Each formatter configuration should return a table that consist of:
 
@@ -131,6 +135,10 @@ Each formatter configuration should return a table that consist of:
   (optional)
 - `ignore_exitcode` : set to true if the program expects non-zero success exit
   code (optional)
+- `transform` : pass a function that takes in the formatted text and returns
+  the text to be applied to the buffer (optional) (see
+  [`ruby` `rubocop`](lua/formatter/filetypes/ruby) default formatter
+  configuration as an example)
 - `tempfile_dir`: directory for temp file when not using `stdin` (optional)
 - `tempfile_prefix`: prefix for temp file when not using `stdin` (optional)
 - `tempfile_postfix`: postfix for temp file when not using `stdin` (optional)
@@ -145,8 +153,8 @@ formatted causes, for example, `clang-format` to search for the nearest
 #### `try_node_modules`
 
 The `try_node_modules` argument is not yet implemented, but feel free to use
-this argument in your configurations, so that when we add support for it, you
-get the `node_modules` package scanning functionality automatically.
+this argument in your configurations. When we add support for it, you get
+the `node_modules` package scanning functionality automatically!
 
 #### `no_append`
 
