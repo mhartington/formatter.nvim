@@ -93,7 +93,7 @@ this repository by creating or improving default configurations that
 everyone can use! The guide for contributing to default configurations is
 below.
 
-You can use the [`util` module](lua/formatter/util) which has various
+You can use the [`util` module](lua/formatter/util.lua) which has various
 functions that help with creating default configurations as shown above.
 
 Map keys:
@@ -164,7 +164,7 @@ the path to the formatted file as a named argument. For an example, check the
 All default configurations are placed in the 
 [default configurations directory](lua/formatter/filetypes) and are grouped by
 `filetype`. 
-You should use the [`util` module](lua/formatter/util)
+You should use the [`util` module](lua/formatter/util.lua)
 which has various functions that help with creating default configurations.
 
 For example, the default configuration of the `prettier` formatter for the
