@@ -1,7 +1,7 @@
 local M = {}
 
-local defaults = require("formatter.defaults")
-local util = require("formatter.util")
+local defaults = require "formatter.defaults"
+local util = require "formatter.util"
 
 M.uncrustify = util.withl(defaults.uncrustify, "C")
 

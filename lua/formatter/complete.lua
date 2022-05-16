@@ -11,7 +11,7 @@ function M.complete(args)
   for _, val in ipairs(formatters) do
     local tmp = val()
     local exe = tmp.exe
-    if (string.match(exe, input)) then
+    if string.match(exe, input) then
       table.insert(configsToRun, exe)
     end
   end
