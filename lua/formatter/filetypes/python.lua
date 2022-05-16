@@ -17,7 +17,7 @@ end
 
 function M.isort()
   return {
-    exe = "black",
+    exe = "isort",
     args = { "-q", "-" },
     stdin = true,
   }
