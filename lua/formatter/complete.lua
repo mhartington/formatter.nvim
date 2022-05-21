@@ -3,11 +3,14 @@ local config = require "formatter.config"
 local M = {}
 
 function M.complete(args)
-  local input, _, _ = unpack(args)
   local filetype = vim.bo.filetype
   local formatters = config.values.filetype[filetype]
-  local configsToRun = {}
+  if type(formatters) ~= "table" then
+    return {}
+  end
 
+  local input, _, _ = unpack(args)
+  local configsToRun = {}
   for _, val in ipairs(formatters) do
     local tmp = val()
     local exe = tmp.exe
