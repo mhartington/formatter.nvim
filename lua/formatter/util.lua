@@ -7,6 +7,8 @@ local config = require "formatter.config"
 
 M.notify_opts = { title = "Formatter" }
 
+M.mods = nil
+
 function M.debug(txt)
   if config.values.log_level == vim.log.levels.DEBUG then
     vim.notify(txt, vim.log.levels.DEBUG, M.notify_opts)
@@ -35,7 +37,6 @@ function M.error(...)
   end
 end
 
-M.mods = nil
 function M.print(msg)
   if M.mods ~= "silent" then
     local txt = string.format("Formatter: %s", msg)
@@ -213,10 +214,7 @@ function M.formatters_for_filetype(filetype)
     return {}
   end
 
-  return M.append(
-    config.values.filetype[filetype],
-    config.values.filetype["*"]
-  )
+  return M.append(config.values.filetype[filetype], config.values.filetype["*"])
 end
 
 -----------------------------------------------------------------------------

@@ -50,7 +50,8 @@ function M.start_task(configs, startLine, endLine, opts)
   local name
   local ignore_exitcode
   local currentOutput
-  local buf_skip_format = util.get_buffer_variable(bufnr, "formatter_skip_buf") or false
+  local buf_skip_format = util.get_buffer_variable(bufnr, "formatter_skip_buf")
+    or false
   local tempfiles = {}
 
   if buf_skip_format then
@@ -124,7 +125,8 @@ function M.start_task(configs, startLine, endLine, opts)
     if current.config.stdin == nil then
       util.print(
         string.format(
-          "Stdin option is not set for %s. Please set stdin to either true or false",
+          "Stdin option is not set for %s. "
+            .. "Please set stdin to either true or false",
           name
         )
       )
@@ -184,7 +186,8 @@ function M.start_task(configs, startLine, endLine, opts)
       if not output then
         util.error(
           string.format(
-            "Formatter: Formatted code not found. You may need to change the stdin setting of %s.",
+            "Formatter: Formatted code not found. "
+              .. "You may need to change the stdin setting of %s.",
             name
           )
         )
