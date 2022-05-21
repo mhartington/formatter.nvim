@@ -1,13 +1,11 @@
 local M = {}
 
-FORMATTER_CONFIG_VALUES = FORMATTER_CONFIG_VALUES or {}
-M.values = FORMATTER_CONFIG_VALUES or {}
-
-function M.set_defaults(defaults)
-  defaults = defaults or {}
-  M.values = vim.tbl_extend("force", { filetype = {} }, defaults)
-end
-
-M.set_defaults()
+FORMATTER_CONFIG_VALUES = FORMATTER_CONFIG_VALUES
+  or {
+    log_level = vim.log.levels.WARN,
+    logging = false,
+    filetype = {},
+  }
+M.values = FORMATTER_CONFIG_VALUES
 
 return M

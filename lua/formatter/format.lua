@@ -2,7 +2,7 @@ local M = {}
 
 local util = require "formatter.util"
 
-function M.format(args, mods, startLine, endLine, opts)
+function M.format(args, mods, start_line, end_line, opts)
   if M.saving then
     return
   end
@@ -14,28 +14,34 @@ function M.format(args, mods, startLine, endLine, opts)
   end
 
   util.mods = mods
-  startLine = startLine - 1
-  local userPassedFmt = util.split(args, " ")
+  start_line = start_line - 1
+  local user_passed_formatters = util.split(args, " ")
   local filetype = vim.bo.filetype
   local formatters = util.formatters_for_filetype(filetype)
 
-  local configsToRun = {}
+  local configs_to_run = {}
   -- No formatters defined for the given file type
   if util.is_empty(formatters) then
-    util.error(string.format("No formatter defined for %s files", filetype))
+    util.info(string.format("No formatter defined for %s files", filetype))
     return
   end
-  for _, val in ipairs(formatters) do
-    local tmp = val()
-    if tmp and tmp.exe and (userPassedFmt == nil or userPassedFmt[tmp.exe]) then
-      table.insert(configsToRun, { config = tmp, name = tmp.exe })
+  for _, formatter_config_function in ipairs(formatters) do
+    local formatter = formatter_config_function()
+    if
+      formatter
+      and formatter.exe
+      and (
+        user_passed_formatters == nil or user_passed_formatters[formatter.exe]
+      )
+    then
+      table.insert(configs_to_run, { config = formatter, name = formatter.exe })
     end
   end
 
-  M.start_task(configsToRun, startLine, endLine, opts)
+  M.start_task(configs_to_run, start_line, end_line, opts)
 end
 
-function M.start_task(configs, startLine, endLine, opts)
+function M.start_task(configs, start_line, end_line, opts)
   opts = vim.tbl_deep_extend("keep", opts or {}, {
     write = false,
   })
@@ -43,19 +49,19 @@ function M.start_task(configs, startLine, endLine, opts)
   local F = {}
   local bufnr = vim.api.nvim_get_current_buf()
   local bufname = vim.api.nvim_buf_get_name(bufnr)
-  local input = util.get_lines(bufnr, startLine, endLine)
+  local input = util.get_lines(bufnr, start_line, end_line)
   local inital_changedtick = vim.api.nvim_buf_get_changedtick(bufnr)
   local output = input
-  local errOutput = nil
+  local error_output = nil
   local name
   local ignore_exitcode
-  local currentOutput
+  local current_output
   local buf_skip_format = util.get_buffer_variable(bufnr, "formatter_skip_buf")
     or false
   local tempfiles = {}
 
   if buf_skip_format then
-    util.info "Formatting turn off for buffer"
+    util.info "Formatting turned off for buffer"
     return
   end
 
@@ -68,7 +74,7 @@ function M.start_task(configs, startLine, endLine, opts)
         data = util.read_temp_file(tempfiles[job_id])
       end
       if not util.is_empty(data) then
-        currentOutput = data
+        current_output = data
       end
     end
 
@@ -77,7 +83,7 @@ function M.start_task(configs, startLine, endLine, opts)
         data[#data] = nil
       end
       if not util.is_empty(data) then
-        errOutput = data
+        error_output = data
       end
     end
 
@@ -88,11 +94,11 @@ function M.start_task(configs, startLine, endLine, opts)
       -- Data is exit code here
       -- Failed to run, stop the loop
       if not ignore_exitcode and data > 0 then
-        if errOutput then
+        if error_output then
           util.error(
             string.format(
-              "failed to run formatter %s",
-              name .. ". " .. table.concat(errOutput)
+              "Failed to run formatter %s",
+              name .. ". " .. table.concat(error_output)
             )
           )
         end
@@ -101,7 +107,7 @@ function M.start_task(configs, startLine, endLine, opts)
       -- Success
       if ignore_exitcode or data == 0 then
         util.info(string.format("Finished running %s", name))
-        output = transform and transform(currentOutput) or currentOutput
+        output = transform and transform(current_output) or current_output
       end
       F.step()
     end
@@ -109,7 +115,7 @@ function M.start_task(configs, startLine, endLine, opts)
 
   function F.run(current)
     if inital_changedtick ~= vim.api.nvim_buf_get_changedtick(bufnr) then
-      util.debug "Buffer changed while formatting, skipping"
+      util.info "Buffer changed while formatting, skipping"
       return
     end
 
@@ -120,17 +126,6 @@ function M.start_task(configs, startLine, endLine, opts)
       for _, arg in ipairs(current.config.args) do
         table.insert(cmd, arg)
       end
-    end
-
-    if current.config.stdin == nil then
-      util.print(
-        string.format(
-          "Stdin option is not set for %s. "
-            .. "Please set stdin to either true or false",
-          name
-        )
-      )
-      return
     end
 
     local on_event = function(...)
@@ -177,7 +172,7 @@ function M.start_task(configs, startLine, endLine, opts)
 
   function F.done()
     if inital_changedtick ~= vim.api.nvim_buf_get_changedtick(bufnr) then
-      util.print "Buffer changed while formatting, not applying formatting"
+      util.warn "Buffer changed while formatting, not applying formatting"
       return
     end
 
@@ -193,7 +188,7 @@ function M.start_task(configs, startLine, endLine, opts)
         )
         return
       end
-      util.set_lines(bufnr, startLine, endLine, output)
+      util.set_lines(bufnr, start_line, end_line, output)
       vim.fn.winrestview(view)
 
       if opts.write and bufnr == vim.api.nvim_get_current_buf() then

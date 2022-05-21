@@ -9,50 +9,33 @@ M.notify_opts = { title = "Formatter" }
 
 M.mods = nil
 
+function M.trace(txt)
+  if config.values.log_level <= vim.log.levels.TRACE then
+    vim.notify(txt, vim.log.levels.TRACE, M.notify_opts)
+  end
+end
+
 function M.debug(txt)
-  if config.values.log_level == vim.log.levels.DEBUG then
+  if config.values.log_level <= vim.log.levels.DEBUG then
     vim.notify(txt, vim.log.levels.DEBUG, M.notify_opts)
   end
 end
 
 function M.info(txt)
-  if config.values.log_level == vim.log.levels.INFO then
+  if config.values.log_level <= vim.log.levels.INFO then
     vim.notify(txt, vim.log.levels.INFO, M.notify_opts)
   end
 end
 
 function M.warn(txt)
-  if config.values.log_level == vim.log.levels.WARN then
+  if config.values.log_level <= vim.log.levels.WARN then
     vim.notify(txt, vim.log.levels.WARN, M.notify_opts)
   end
 end
 
-function M.error(...)
-  if config.values.log_level == vim.log.levels.WARN then
-    vim.notify(
-      table.concat(vim.tbl_flatten { ... }),
-      vim.log.levels.WARN,
-      M.notify_opts
-    )
-  end
-end
-
-function M.print(msg)
-  if M.mods ~= "silent" then
-    local txt = string.format("Formatter: %s", msg)
-    vim.notify(txt, vim.log.levels.INFO, M.notify_opts)
-  end
-end
-
-function M.log(...)
-  if config.values.logging then
-    vim.api.nvim_out_write(table.concat(vim.tbl_flatten { ... }) .. "\n")
-  end
-end
-
-function M.inspect(val)
-  if config.values.logging then
-    print(vim.inspect(val))
+function M.error(txt)
+  if config.values.log_level <= vim.log.levels.ERROR then
+    vim.notify(txt, vim.log.levels.ERROR, M.notify_opts)
   end
 end
 
@@ -79,29 +62,6 @@ function M.split(s, sep, plain)
     end
     return t
   end
-end
-
-function M.to_table(b)
-  if type(b) ~= "table" then
-    if not b then
-      return {}
-    end
-
-    return { b }
-  end
-
-  return b
-end
-
-function M.append(a, b)
-  a = M.to_table(a)
-  b = M.to_table(b)
-
-  for _, v in ipairs(b) do
-    table.insert(a, v)
-  end
-
-  return a
 end
 
 function M.is_same(a, b)
@@ -211,10 +171,59 @@ end
 
 function M.formatters_for_filetype(filetype)
   if type(filetype) ~= "string" then
-    return {}
+    return { unpack(config.values.filetype["*"] or {}) }
   end
 
-  return M.append(config.values.filetype[filetype], config.values.filetype["*"])
+  return {
+    unpack(config.values.filetype[filetype] or {}),
+    unpack(config.values.filetype["*"] or {}),
+  }
+end
+
+function M.validate_config(user_config)
+  if not user_config then
+    return true
+  end
+
+  if type(user_config) ~= "table" then
+    return false
+  end
+
+  if user_config.logging then
+    if type(user_config.logging) ~= "boolean" then
+      return false
+    end
+  end
+
+  if user_config.log_level then
+    if type(user_config.log_level) ~= "number" then
+      return false
+    end
+  end
+
+  if user_config.filetype then
+    if type(user_config.filetype) ~= "table" then
+      return false
+    end
+
+    for filetype, formatters in pairs(user_config.filetype) do
+      if type(filetype) ~= "string" then
+        return false
+      end
+
+      if type(formatters) ~= "table" then
+        return false
+      end
+
+      for _, formatter in ipairs(user_config) do
+        if type(formatter) ~= "function" then
+          return false
+        end
+      end
+    end
+  end
+
+  return true
 end
 
 -----------------------------------------------------------------------------
