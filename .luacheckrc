@@ -1,3 +1,3 @@
-globals = { "vim", "_", "FORMATTER_CONFIG_VALUES" }
+globals = { "vim", "_", }
 exclude_files = { "test/*.lua" }
 exclude_files = { "asset/*.lua" }

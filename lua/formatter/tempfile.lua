@@ -1,5 +1,6 @@
 local M = {}
 
+-- TODO: better way to join paths
 M.path_separator = (function()
   local jit = require "jit"
   if jit then
@@ -14,30 +15,27 @@ M.path_separator = (function()
   end
 end)()
 
-function M.create(bufname, input, opts)
-  local split_bufname = vim.split(bufname, M.path_separator)
-  local prefix = opts.tempfile_prefix or "~formatting"
-  local suffix = opts.tempfile_postfix or ""
-  local filename = ("%s_%d_%s%s"):format(
-    prefix,
+function M.create(buffer_path, content, options)
+  local buffer_dir = vim.fn.fnamemodify(buffer_path, ":h")
+  local buffer_name = vim.fn.fnamemodify(buffer_path, ":t")
+
+  local filename = ("%s_%d_%s_%s"):format(
+    options.tempfile_prefix or "~formatter",
     math.random(1, 1000000),
-    split_bufname[#split_bufname],
-    suffix
+    buffer_name,
+    options.tempfile_postfix or ""
   )
 
-  split_bufname[#split_bufname] = nil
-  local tempfile_dir = table.concat(split_bufname, M.path_separator)
-  if tempfile_dir == "" then
-    tempfile_dir = "."
-  end
-  local path = ("%s/%s"):format((opts.tempfile_dir or tempfile_dir), filename)
+  local path = (options.tempfile_dir or buffer_dir)
+    .. M.path_separator
+    .. filename
 
   local tempfile = io.open(path, "w+")
   if not tempfile then
     return nil
   end
 
-  for _, line in pairs(input) do
+  for _, line in pairs(content) do
     tempfile:write(line .. "\n")
   end
   tempfile:flush()
