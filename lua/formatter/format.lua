@@ -180,7 +180,7 @@ function M.start_task(configs, start_line, end_line, opts)
       if not output then
         log.error(
           string.format(
-            "Formatter: Formatted code not found. "
+            "Formatted code not found. "
               .. "You may need to change the stdin setting of %s.",
             name
           )
