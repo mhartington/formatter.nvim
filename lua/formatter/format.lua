@@ -8,20 +8,18 @@ function M.format(args, mods, startLine, endLine, opts)
   if M.saving then
     return
   end
-  util.mods = mods
-  startLine = startLine - 1
-  local userPassedFmt = util.split(args, " ")
-  local modifiable = vim.bo.modifiable
-  local filetype = vim.bo.filetype
-  local formatters = util.append(
-    config.values.filetype[filetype],
-    config.values.filetype["*"]
-  )
 
+  local modifiable = vim.bo.modifiable
   if not modifiable then
     util.info "Buffer is not modifiable"
     return
   end
+
+  util.mods = mods
+  startLine = startLine - 1
+  local userPassedFmt = util.split(args, " ")
+  local filetype = vim.bo.filetype
+  local formatters = config.formatters_for_filetype(filetype)
 
   local configsToRun = {}
   -- No formatters defined for the given file type

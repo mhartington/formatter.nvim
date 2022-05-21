@@ -1,13 +1,22 @@
-_FormatterConfigurationValues = _FormatterConfigurationValues or {}
+local M = {}
 
-local config = {}
-config.values = _FormatterConfigurationValues
+local util = require "formatter.util"
 
-function config.set_defaults(defaults)
+M.values = _FormatterConfigurationValues or {}
+
+function M.set_defaults(defaults)
   defaults = defaults or {}
-  config.values = vim.tbl_extend("force", { filetype = {} }, defaults)
+  M.values = vim.tbl_extend("force", { filetype = {} }, defaults)
 end
 
-config.set_defaults()
+M.set_defaults()
 
-return config
+function M.formatters_for_filetype(filetype)
+  if type(filetype) ~= "string" then
+    return {}
+  end
+
+  return util.append(M.values.filetype[filetype], M.values.filetype["*"])
+end
+
+return M
