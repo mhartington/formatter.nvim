@@ -106,6 +106,29 @@ function util.split(s, sep, plain)
   end
 end
 
+function util.to_table(b)
+  if type(b) ~= "table" then
+    if not b then
+      return {}
+    end
+
+    return { b }
+  end
+
+  return b
+end
+
+function util.append(a, b)
+  a = util.to_table(a)
+  b = util.to_table(b)
+
+  for _, v in ipairs(b) do
+    table.insert(a, v)
+  end
+
+  return a
+end
+
 function util.isSame(a, b)
   if type(a) ~= type(b) then
     return false
@@ -187,12 +210,10 @@ function util.read_temp_file(tempfile_name)
   return lines
 end
 
--- NOTE: change as needed
 function util.get_cwd()
   return vim.fn.getcwd()
 end
 
--- NOTE: change as needed
 function util.get_current_buffer_file_path()
   return vim.api.nvim_buf_get_name(0)
 end
@@ -205,12 +226,15 @@ function util.get_current_buffer_file_dir()
   return vim.fn.fnamemodify(util.get_current_buffer_file_path(), ":h")
 end
 
--- NOTE: change as needed
 function util.quote_cmd_arg(arg)
-  return string.format('"%s"', arg)
+  return string.format("'%s'", arg)
 end
 
--- NOTE: fnameescape or shellescape?
+function util.wrap_sed_replace(pattern, replacement, flags)
+  return string.format("s/%s/%s/%s", pattern, replacement or "", flags or "")
+end
+
+-- TODO: check fnameescape or shellescape?
 function util.escape_path(arg)
   return vim.fn.fnameescape(arg)
 end

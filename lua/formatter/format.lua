@@ -13,7 +13,10 @@ function M.format(args, mods, startLine, endLine, opts)
   local userPassedFmt = util.split(args, " ")
   local modifiable = vim.bo.modifiable
   local filetype = vim.bo.filetype
-  local formatters = config.values.filetype[filetype]
+  local formatters = util.append(
+    config.values.filetype[filetype],
+    config.values.filetype["*"]
+  )
 
   if not modifiable then
     util.info "Buffer is not modifiable"
