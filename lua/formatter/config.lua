@@ -57,7 +57,7 @@ function M.validate_config(user_config)
 end
 
 function M.normalize_config(valid_config)
-  local normalized = vim.tbl_deep_extend("force", {}, M.config.default_config)
+  local normalized = vim.tbl_deep_extend("force", {}, M.default_config)
   if not valid_config then
     return normalized
   end
@@ -78,12 +78,12 @@ end
 
 function M.formatters_for_filetype(filetype)
   if type(filetype) ~= "string" then
-    return { unpack(M.config.values.filetype["*"] or {}) }
+    return { unpack(M.values.filetype["*"] or {}) }
   end
 
   return {
-    unpack(M.config.values.filetype[filetype] or {}),
-    unpack(M.config.values.filetype["*"] or {}),
+    unpack(M.values.filetype[filetype] or {}),
+    unpack(M.values.filetype["*"] or {}),
   }
 end
 
