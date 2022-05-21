@@ -1,8 +1,10 @@
 # Formatter.nvim
 
-A format runner for `Neovim`.
+<div style="text-align: center;">
+  A format runner for `Neovim`.
 
-![splash](asset/splash.gif)
+  ![splash](asset/splash.gif)
+</div>
 
 We want to thank the [`neoformat`](https://github.com/sbdchd/neoformat)
 contributors. They developed a lot of formatter configurations that we used as

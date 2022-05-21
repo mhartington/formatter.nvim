@@ -23,7 +23,7 @@ function M.format(args, mods, startLine, endLine, opts)
 
   local configsToRun = {}
   -- No formatters defined for the given file type
-  if util.isEmpty(formatters) then
+  if util.is_empty(formatters) then
     util.error(string.format("No formatter defined for %s files", filetype))
     return
   end
@@ -34,10 +34,10 @@ function M.format(args, mods, startLine, endLine, opts)
     end
   end
 
-  M.startTask(configsToRun, startLine, endLine, opts)
+  M.start_task(configsToRun, startLine, endLine, opts)
 end
 
-function M.startTask(configs, startLine, endLine, opts)
+function M.start_task(configs, startLine, endLine, opts)
   opts = vim.tbl_deep_extend("keep", opts or {}, {
     write = false,
   })
@@ -45,19 +45,21 @@ function M.startTask(configs, startLine, endLine, opts)
   local F = {}
   local bufnr = api.nvim_get_current_buf()
   local bufname = api.nvim_buf_get_name(bufnr)
-  local input = util.getLines(bufnr, startLine, endLine)
+  local input = util.get_lines(bufnr, startLine, endLine)
   local inital_changedtick = vim.api.nvim_buf_get_changedtick(bufnr)
   local output = input
   local errOutput = nil
   local name
   local ignore_exitcode
   local currentOutput
-  local buf_skip_format = util.getBufVar(bufnr, "formatter_skip_buf") or false
+  local buf_skip_format = util.get_buffer_variable(bufnr, "formatter_skip_buf") or false
   local tempfiles = {}
+
   if buf_skip_format then
     util.info "Formatting turn off for buffer"
     return
   end
+
   function F.on_event(transform, job_id, data, event)
     if event == "stdout" then
       if data[#data] == "" then
@@ -66,7 +68,7 @@ function M.startTask(configs, startLine, endLine, opts)
       if tempfiles[job_id] ~= nil then
         data = util.read_temp_file(tempfiles[job_id])
       end
-      if not util.isEmpty(data) then
+      if not util.is_empty(data) then
         currentOutput = data
       end
     end
@@ -75,7 +77,7 @@ function M.startTask(configs, startLine, endLine, opts)
       if data[#data] == "" then
         data[#data] = nil
       end
-      if not util.isEmpty(data) then
+      if not util.is_empty(data) then
         errOutput = data
       end
     end
@@ -179,7 +181,7 @@ function M.startTask(configs, startLine, endLine, opts)
       return
     end
 
-    if not util.isSame(input, output) then
+    if not util.is_same(input, output) then
       local view = vim.fn.winsaveview()
       if not output then
         util.error(
@@ -190,7 +192,7 @@ function M.startTask(configs, startLine, endLine, opts)
         )
         return
       end
-      util.setLines(bufnr, startLine, endLine, output)
+      util.set_lines(bufnr, startLine, endLine, output)
       vim.fn.winrestview(view)
 
       if opts.write and bufnr == api.nvim_get_current_buf() then
@@ -202,12 +204,12 @@ function M.startTask(configs, startLine, endLine, opts)
       util.info(string.format("No change necessary with %s", name))
     end
 
-    util.fireEvent "FormatterPost"
+    util.fire_event "FormatterPost"
   end
 
   -- AND start the loop
 
-  util.fireEvent "FormatterPre"
+  util.fire_event "FormatterPre"
   F.step()
 end
 

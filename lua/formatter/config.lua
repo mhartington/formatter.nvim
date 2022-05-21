@@ -1,8 +1,9 @@
-local M = {}
-
 local util = require "formatter.util"
 
-M.values = _FormatterConfigurationValues or {}
+local M = {}
+
+FORMATTER_CONFIG_VALUES = FORMATTER_CONFIG_VALUES or {}
+M.values = FORMATTER_CONFIG_VALUES or {}
 
 function M.set_defaults(defaults)
   defaults = defaults or {}
