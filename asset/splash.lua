@@ -1,7 +1,10 @@
-local M = {}
+local   M = {}
 
-function M.hello()
-  print "Hello formatter.nvim!"
+  function M.hello()   
+
+  print "Hello formatter.nvim!" 
+
+
 end
 
-return M
+return   M
