@@ -1,28 +1,31 @@
 local M = {}
 
+local config = require "formatter.config"
+local log = require "formatter.log"
+local tempfile = require "formatter.tempfile"
 local util = require "formatter.util"
 
 function M.format(args, mods, start_line, end_line, opts)
-  if M.saving then
+  if M.saving_currently then
     return
   end
 
   local modifiable = vim.bo.modifiable
   if not modifiable then
-    util.info "Buffer is not modifiable"
+    log.info "Buffer is not modifiable"
     return
   end
 
-  util.mods = mods
+  log.current_format_mods = mods
   start_line = start_line - 1
   local user_passed_formatters = util.split(args, " ")
   local filetype = vim.bo.filetype
-  local formatters = util.formatters_for_filetype(filetype)
+  local formatters = config.formatters_for_filetype(filetype)
 
   local configs_to_run = {}
   -- No formatters defined for the given file type
   if util.is_empty(formatters) then
-    util.info(string.format("No formatter defined for %s files", filetype))
+    log.info(string.format("No formatter defined for %s files", filetype))
     return
   end
   for _, formatter_config_function in ipairs(formatters) do
@@ -61,7 +64,7 @@ function M.start_task(configs, start_line, end_line, opts)
   local tempfiles = {}
 
   if buf_skip_format then
-    util.info "Formatting turned off for buffer"
+    log.info "Formatting turned off for buffer"
     return
   end
 
@@ -71,7 +74,7 @@ function M.start_task(configs, start_line, end_line, opts)
         data[#data] = nil
       end
       if tempfiles[job_id] ~= nil then
-        data = util.read_temp_file(tempfiles[job_id])
+        data = tempfile.read(tempfiles[job_id])
       end
       if not util.is_empty(data) then
         current_output = data
@@ -95,7 +98,7 @@ function M.start_task(configs, start_line, end_line, opts)
       -- Failed to run, stop the loop
       if not ignore_exitcode and data > 0 then
         if error_output then
-          util.error(
+          log.error(
             string.format(
               "Failed to run formatter %s",
               name .. ". " .. table.concat(error_output)
@@ -106,7 +109,7 @@ function M.start_task(configs, start_line, end_line, opts)
 
       -- Success
       if ignore_exitcode or data == 0 then
-        util.info(string.format("Finished running %s", name))
+        log.info(string.format("Finished running %s", name))
         output = transform and transform(current_output) or current_output
       end
       F.step()
@@ -115,7 +118,7 @@ function M.start_task(configs, start_line, end_line, opts)
 
   function F.run(current)
     if inital_changedtick ~= vim.api.nvim_buf_get_changedtick(bufnr) then
-      util.info "Buffer changed while formatting, skipping"
+      log.info "Buffer changed while formatting, skipping"
       return
     end
 
@@ -146,11 +149,7 @@ function M.start_task(configs, start_line, end_line, opts)
       vim.fn.chanclose(job_id, "stdin")
     else
       -- TODO: handle null tempfile
-      local tempfile_name = util.create_temp_file(
-        bufname,
-        output,
-        current.config
-      )
+      local tempfile_name = tempfile.create(bufname, output, current.config)
       if not current.config.no_append then
         table.insert(cmd, tempfile_name)
       end
@@ -172,14 +171,14 @@ function M.start_task(configs, start_line, end_line, opts)
 
   function F.done()
     if inital_changedtick ~= vim.api.nvim_buf_get_changedtick(bufnr) then
-      util.warn "Buffer changed while formatting, not applying formatting"
+      log.warn "Buffer changed while formatting, not applying formatting"
       return
     end
 
     if not util.is_same(input, output) then
       local view = vim.fn.winsaveview()
       if not output then
-        util.error(
+        log.error(
           string.format(
             "Formatter: Formatted code not found. "
               .. "You may need to change the stdin setting of %s.",
@@ -192,12 +191,12 @@ function M.start_task(configs, start_line, end_line, opts)
       vim.fn.winrestview(view)
 
       if opts.write and bufnr == vim.api.nvim_get_current_buf() then
-        M.saving = true
+        M.saving_currently = true
         vim.api.nvim_command "update"
-        M.saving = false
+        M.saving_currently = false
       end
     else
-      util.info(string.format("No change necessary with %s", name))
+      log.info(string.format("No change necessary with %s", name))
     end
 
     util.fire_event "FormatterPost"

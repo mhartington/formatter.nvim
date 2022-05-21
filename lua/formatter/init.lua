@@ -1,16 +1,15 @@
 local M = {}
 
 local config = require "formatter.config"
-local util = require "formatter.util"
+local log = require "formatter.log"
 
 function M.setup(user_config)
-  local is_valid = util.validate_config(user_config)
-  if not is_valid then
-    util.error "Configuration is not valid"
+  if not config.validate_config(user_config) then
+    log.error "Configuration is not valid"
     return
   end
 
-  config.values = vim.tbl_extend("force", config.values, user_config)
+  config.values = config.normalize_config(user_config)
 end
 
 return M
