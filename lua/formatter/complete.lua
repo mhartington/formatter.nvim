@@ -1,10 +1,10 @@
 local M = {}
 
-local config = require "formatter.config"
+local util = require "formatter.util"
 
 function M.complete(args)
   local filetype = vim.bo.filetype
-  local formatters = config.formatters_for_filetype(filetype)
+  local formatters = util.formatters_for_filetype(filetype)
 
   local input, _, _ = unpack(args)
   local completion = {}
