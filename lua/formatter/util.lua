@@ -1,8 +1,6 @@
-local config = require "formatter.config"
-local logging_enabled = config.values.logging
-local log_level = config.values.log_level
-
 local M = {}
+
+local config = require "formatter.config"
 
 -----------------------------------------------------------------------------
 -- Logging
@@ -10,25 +8,25 @@ local M = {}
 M.notify_opts = { title = "Formatter" }
 
 function M.debug(txt)
-  if log_level == vim.log.levels.DEBUG then
+  if config.values.log_level == vim.log.levels.DEBUG then
     vim.notify(txt, vim.log.levels.DEBUG, M.notify_opts)
   end
 end
 
 function M.info(txt)
-  if log_level == vim.log.levels.INFO then
+  if config.values.log_level == vim.log.levels.INFO then
     vim.notify(txt, vim.log.levels.INFO, M.notify_opts)
   end
 end
 
 function M.warn(txt)
-  if log_level == vim.log.levels.WARN then
+  if config.values.log_level == vim.log.levels.WARN then
     vim.notify(txt, vim.log.levels.WARN, M.notify_opts)
   end
 end
 
 function M.error(...)
-  if log_level == vim.log.levels.WARN then
+  if config.values.log_level == vim.log.levels.WARN then
     vim.notify(
       table.concat(vim.tbl_flatten { ... }),
       vim.log.levels.WARN,
@@ -46,13 +44,13 @@ function M.print(msg)
 end
 
 function M.log(...)
-  if logging_enabled then
+  if config.values.logging then
     vim.api.nvim_out_write(table.concat(vim.tbl_flatten { ... }) .. "\n")
   end
 end
 
 function M.inspect(val)
-  if logging_enabled then
+  if config.values.logging then
     print(vim.inspect(val))
   end
 end
@@ -208,6 +206,17 @@ end
 -- TODO: check that this is okay for paths and ordinary strings
 function M.format_prettydiff_arg(name, value)
   return string.format('%s:"%s"', name, value)
+end
+
+function M.formatters_for_filetype(filetype)
+  if type(filetype) ~= "string" then
+    return {}
+  end
+
+  return M.append(
+    config.values.filetype[filetype],
+    config.values.filetype["*"]
+  )
 end
 
 -----------------------------------------------------------------------------

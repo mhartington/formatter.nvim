@@ -1,8 +1,6 @@
-local api = vim.api
-local config = require "formatter.config"
-local util = require "formatter.util"
-
 local M = {}
+
+local util = require "formatter.util"
 
 function M.format(args, mods, startLine, endLine, opts)
   if M.saving then
@@ -19,7 +17,7 @@ function M.format(args, mods, startLine, endLine, opts)
   startLine = startLine - 1
   local userPassedFmt = util.split(args, " ")
   local filetype = vim.bo.filetype
-  local formatters = config.formatters_for_filetype(filetype)
+  local formatters = util.formatters_for_filetype(filetype)
 
   local configsToRun = {}
   -- No formatters defined for the given file type
@@ -43,8 +41,8 @@ function M.start_task(configs, startLine, endLine, opts)
   })
 
   local F = {}
-  local bufnr = api.nvim_get_current_buf()
-  local bufname = api.nvim_buf_get_name(bufnr)
+  local bufnr = vim.api.nvim_get_current_buf()
+  local bufname = vim.api.nvim_buf_get_name(bufnr)
   local input = util.get_lines(bufnr, startLine, endLine)
   local inital_changedtick = vim.api.nvim_buf_get_changedtick(bufnr)
   local output = input
@@ -195,7 +193,7 @@ function M.start_task(configs, startLine, endLine, opts)
       util.set_lines(bufnr, startLine, endLine, output)
       vim.fn.winrestview(view)
 
-      if opts.write and bufnr == api.nvim_get_current_buf() then
+      if opts.write and bufnr == vim.api.nvim_get_current_buf() then
         M.saving = true
         vim.api.nvim_command "update"
         M.saving = false

@@ -1,6 +1,6 @@
-local config = require "formatter.config"
-
 local M = {}
+
+local config = require "formatter.config"
 
 function M.complete(args)
   local filetype = vim.bo.filetype
