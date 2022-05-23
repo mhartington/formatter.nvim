@@ -19,6 +19,10 @@ function M.get_current_buffer_file_dir()
   return vim.fn.fnamemodify(M.get_current_buffer_file_path(), ":h")
 end
 
+function M.get_current_buffer_file_extension()
+  return vim.fn.fnamemodify(M.get_current_buffer_file_path(), ":e")
+end
+
 function M.quote_cmd_arg(arg)
   return string.format("'%s'", arg)
 end
