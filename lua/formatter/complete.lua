@@ -10,9 +10,11 @@ function M.complete(args)
   local completion = {}
   for _, formatter_function in ipairs(formatters) do
     local formatter = formatter_function()
-    local exe = formatter.exe
-    if string.match(exe, input) then
-      table.insert(completion, exe)
+    if formatter ~= nil then
+      local exe = formatter.exe
+      if string.match(exe, input) then
+        table.insert(completion, exe)
+      end
     end
   end
   return completion
