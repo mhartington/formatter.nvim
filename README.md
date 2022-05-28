@@ -61,7 +61,7 @@ require('formatter').setup {
       -- Pick from defaults:
       require('formatter.filetypes.lua').stylua,
 
-      -- , or define your own:
+      -- or define your own:
       function()
         return {
           exe = "stylua",
