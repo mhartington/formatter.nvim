@@ -86,6 +86,10 @@ end
 
 function util.isEmpty(s)
   if type(s) == "table" then
+    local mt = getmetatable(s)
+    if mt and mt.__call then
+      return false
+    end
     for _, v in pairs(s) do
       if not util.isEmpty(v) then
         return false
