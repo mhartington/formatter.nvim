@@ -3,9 +3,11 @@ function! s:formatter_complete(...)
 endfunction
 
 command! -nargs=? -range=% -bar
-      \ -complete=customlist,s:formatter_complete
-      \ Format lua require("formatter.format").format(<q-args>, <q-mods>, <line1>, <line2>)
+\   -complete=customlist,s:formatter_complete
+\   Format lua require("formatter.format").format(
+\     <q-args>, <q-mods>, <line1>, <line2>)
 
 command! -nargs=? -range=% -bar
-      \ -complete=customlist,s:formatter_complete
-      \ FormatWrite lua require("formatter.format").format(<q-args>, <q-mods>, <line1>, <line2>, {write=true})
+\   -complete=customlist,s:formatter_complete
+\   FormatWrite lua require("formatter.format").format(
+\     <q-args>, <q-mods>, <line1>, <line2>, { write = true })

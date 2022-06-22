@@ -1,9 +1,12 @@
 # Formatter.nvim
 
-A format runner for `Neovim`.
+<div align="center">
+  <h3>A format runner for <code>Neovim</code>.</h3>
+  <img src="asset/splash.gif" alt="splash" />
+</div>
 
 We want to thank the [`neoformat`](https://github.com/sbdchd/neoformat)
-contributors for developing a lot of formatter configurations that we used as
+contributors. They developed a lot of formatter configurations that we used as
 a reference to create our own opt-in default formatter configurations.
 
 ## Features
@@ -11,6 +14,7 @@ a reference to create our own opt-in default formatter configurations.
 - Written in `Lua`
 - Asynchronous execution
 - Opt-in default formatter configurations
+- Conditional formatting
 
 ## Install
 
@@ -54,15 +58,25 @@ Setup:
 local util = require "formatter.util"
 
 -- Provides the Format and FormatWrite commands
-require('formatter').setup {
+require("formatter").setup {
   -- All formatter configurations are opt-in
   filetype = {
+    -- Formatter configurations for filetype "lua" go here
+    -- and will be executed in order
     lua = {
-      -- Pick from defaults:
-      require('formatter.filetypes.lua').stylua,
+      -- "formatter.filetypes.lua" defines default configurations for the
+      -- "lua" filetype
+      require("formatter.filetypes.lua").stylua,
 
-      -- ,or define your own:
+      -- You can also define your own configuration
       function()
+        -- Supports conditional formatting
+        if util.get_current_buffer_file_name() == "special.lua" then
+          return nil
+        end
+
+        -- Full specification of configurations is down below and in Vim help
+        -- files
         return {
           exe = "stylua",
           args = {
@@ -75,22 +89,35 @@ require('formatter').setup {
           stdin = true,
         }
       end
+    },
+
+    -- Use the special "*" filetype for defining formatter configurations on
+    -- any filetype
+    ["*"] = {
+      -- "formatter.filetypes.any" defines default configurations for any
+      -- filetype
+      require("formatter.filetypes.any").remove_trailing_whitespace
     }
   }
 }
 ```
 
-By default, there are no preconfigured formatters, however there are opt-in
-[default configurations per `filetype`](lua/formatter/filetypes)
-and [default configurations per formatter](lua/formatter/defaults)
-as shown in the snippet above. It is hard to predict what everyone wants, but
+### Opt-in formatters
+
+By default, there are no preconfigured formatters. You can opt-into
+[default configurations per formatter](lua/formatter/defaults),
+[default configurations per `filetype`](lua/formatter/filetypes), and
+[default configurations for any `filetype`](lua/formatter/filetypes/any.lua)
+or write your own. It is hard to predict what everyone wants, but
 at the same time we realize that most formatter configurations are the same.
 See the discussion in
 [#97](https://github.com/mhartington/formatter.nvim/issues/97) for more
 information.
 
-You can use the [default configurations per `filetype`](lua/formatter/filetypes)
-and [default configurations per formatter](lua/formatter/defaults)
+You can use the
+[default configurations per formatter](lua/formatter/defaults),
+[default configurations per `filetype`](lua/formatter/filetypes), and
+[default configurations for any `filetype`](lua/formatter/filetypes/any.lua)
 as a starting point for creating your configurations.
 Feel free to contribute to this repository by creating or improving default
 configurations that everyone can use! The guide for contributing to default
@@ -99,15 +126,15 @@ configurations is below.
 You can use the [`util` module](lua/formatter/util) which has various
 functions that help with creating default configurations as shown above.
 
-<!-- TODO: with lua callbacks -->
+### Map keys
 
-Map keys:
 ```vim
 nnoremap <silent> <leader>f :Format<CR>
 nnoremap <silent> <leader>F :FormatWrite<CR>
 ```
 
-Format and write after save asynchronously:
+### Format after save
+
 ```vim
 augroup FormatAutogroup
   autocmd!
@@ -165,39 +192,4 @@ the path to the formatted file as a named argument. For an example, check the
 
 ## Contribute
 
-<!-- TODO: general contribution guide? -->
-
-### Default configurations
-
-All default configurations are placed in the 
-[default configurations directory](lua/formatter/filetypes) and are grouped by
-`filetype`. 
-You should use the [`util` module](lua/formatter/util)
-which has various functions that help with creating default configurations.
-
-For example, the default configuration of the `prettier` formatter for the
-`javascript` `filetype` would be placed in
-`lua/formatter/filetypes/javascript.lua` as such:
-
-```lua
-local M = {}
-
-local util = require("formatter.util")
-
--- other formatters...
-
-function M.prettier()
-  return {
-    exe = "prettier",
-    args = {
-      "--stdin-filepath",
-      util.escape_path(util.get_current_buffer_file_path()),
-    },
-    stdin = true,
-  }
-end
-
--- other formatters...
-
-return M
-```
+Refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file for more information.

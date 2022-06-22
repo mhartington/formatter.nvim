@@ -73,15 +73,25 @@ Setup:
   local util = require "formatter.util"
 
   -- Provides the Format and FormatWrite commands
-  require('formatter').setup {
+  require("formatter").setup {
     -- All formatter configurations are opt-in
     filetype = {
+      -- Formatter configurations for filetype "lua" go here
+      -- and will be executed in order
       lua = {
-        -- Pick from defaults:
-        require('formatter.filetypes.lua').stylua,
+        -- "formatter.filetypes.lua" defines default configurations for the
+        -- "lua" filetype
+        require("formatter.filetypes.lua").stylua,
 
-        -- ,or define your own:
+        -- You can also define your own configuration
         function()
+          -- Supports conditional formatting
+          if util.get_current_buffer_file_name() == "special.lua" then
+            return nil
+          end
+
+          -- Full specification of configurations is down below and in Vim help
+          -- files
           return {
             exe = "stylua",
             args = {
@@ -94,27 +104,39 @@ Setup:
             stdin = true,
           }
         end
+      },
+
+      -- Use the special "*" filetype for defining formatter configurations on
+      -- any filetype
+      ["*"] = {
+        -- "formatter.filetypes.any" defines default configurations for any
+        -- filetype
+        require("formatter.filetypes.any").remove_trailing_whitespace
       }
     }
   }
 <
 
-                                                       *formatter-preconfigured*
+                                                   *formatter-opt-in-formatters*
 
-By default, there are no preconfigured formatters, however there are opt-in
-default configurations per filetype (lua/formatter/filetypes) and default 
-configurations per formatter (lua/formatter/defaults) as shown in the snippet
-above. It is hard to predict what everyone wants, but at the same time we
-realize that most formatter configurations are the same. See the discussion at
+By default, there are no preconfigured formatters. You can opt-into
+default configurations per formatter (lua/formatter/defaults),
+default configurations per `filetype` (lua/formatter/filetypes),
+and default configurations for any `filetype` (lua/formatter/filetypes/any.lua)
+or write your own. It is hard to predict what everyone wants, but
+at the same time we realize that most formatter configurations are the same.
+See the discussion in #97
 <https://github.com/mhartington/formatter.nvim/issues/97> for more
 information.
 
-You can use the default configurations per filetyps (lua/formatter/filetypes)
-and defulat configurations per formatter (lua/formatter/defaults) as a
-starting point for creating your configurations. Feel free to contribute to
-this repository by creating or improving default configurations that
-everyone can use! The guide for contributing to default configurations is
-below (|formatter-contrib-formatters|).
+You can use the
+default configurations per formatter (lua/formatter/defaults),
+default configurations per `filetype` (lua/formatter/filetypes),
+and default configurations for any `filetype` (lua/formatter/filetypes/any.lua)
+as a starting point for creating your configurations.
+Feel free to contribute to this repository by creating or improving default
+configurations that everyone can use! The guide for contributing to default
+configurations is below.
 
 
                                                                 *formatter-util*
@@ -205,35 +227,76 @@ default `javascript` `prettydiff` configuration
 
 3.1. Default configurations ~
 
-All default configurations are placed in the default configurations directory
-(lua/formatter/filetypes) and are grouped by `filetype`. 
-You should use the `util` module (lua/formatter/util) which has various
-functions that help with creating default configurations.
+All default configurations are placed in the
+default configurations per formatter(lua/formatter/defaults),
+default configurations per `filetype` (lua/formatter/filetypes), and
+default configurations for any `filetype` (lua/formatter/filetypes/any.lua).
+You should use the `util` module (lua/formatter/util)
+which has various functions that help with creating default configurations.
 
-For example, the default configuration of the `prettier` formatter for the
-`javascript` `filetype` would be placed in `lua/formatter/filetypes/javascript.lua`
-as such:
+The default configurations per formatter (lua/formatter/defaults) return
+functions which create a formatter configuration. For example, the `prettier`
+default configuration function takes in a parser argument:
+
 >
-  local M = {}
+  local util = require "formatter.util"
 
-  local util = require("formatter.util")
+  return function(parser)
+    if not parser then
+      return {
+        exe = "prettier",
+        args = {
+          "--stdin-filepath",
+          util.escape_path(util.get_current_buffer_file_path()),
+        },
+        stdin = true,
+        try_node_modules = true,
+      }
+    end
 
-  -- other formatters...
-
-  function M.prettier()
     return {
       exe = "prettier",
       args = {
         "--stdin-filepath",
         util.escape_path(util.get_current_buffer_file_path()),
+        "--parser",
+        parser,
       },
       stdin = true,
+      try_node_modules = true,
     }
   end
+<
+
+Default configurations per formatter (lua/formatter/defaults)
+are used to create default configurations per `filetype`
+(lua/formatter/filetypes), and default configurations for any `filetype`
+(lua/formatter/filetypes/any.lua).
+
+For example, the default formatter configuration for `prettier` for the
+`typescript` `filetype` (lua/formatter/defaults/typescript.lua) uses the default
+formatter configuration function for `prettier`
+(lua/formatter/defaults/prettier.lua):
+
+>
+  local M = {}
+
+  local defaults = require "formatter.defaults"
+  local util = require "formatter.util"
+
+  -- other formatters...
+
+  -- "util.withl" here returns a function that executes the defaults.prettier
+  -- function with "typescript" as the first argument for the parser
+  M.prettier = util.withl(defaults.prettier, "typescript")
 
   -- other formatters...
 
   return M
 <
 
-vim:ft=help:tw=78:ts=2:sh=2:sts=2:sr:et:ai:norl:
+The default configurations for any `filetype` (lua/formatter/filetypes/any.lua)
+are in exactly the same format as default configurations per `filetype`
+(lua/formatter/filetypes).
+It is just important to note that this file is special because all formatter
+default configurations that can be applied to any `filetype` go here.

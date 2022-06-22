@@ -1,93 +1,78 @@
-local config = require "formatter.config"
-local loggingEnabled = config.values.logging
-local log_level = config.values.log_level
-local util = {}
-util.mods = nil
+local M = {}
 
-local notify_opts = { title = "Formatter" }
+-- NOTE: to contributors
+-- NOTE: use these for "lua/formatter/defaults" and "lua/formatter/filetypes"
 
--- vim.log = {
---   levels = {
---     TRACE = 0;
---     DEBUG = 1;
---     INFO  = 2;
---     WARN  = 3;
---     ERROR = 4;
---   }
--- }
-
-function util.debug(txt)
-  if log_level == vim.log.levels.DEBUG then
-    vim.notify(txt, vim.log.levels.DEBUG, notify_opts)
-  end
-end
-function util.info(txt)
-  if log_level == vim.log.levels.INFO then
-    vim.notify(txt, vim.log.levels.INFO, notify_opts)
-  end
-end
-function util.warn(txt)
-  if log_level == vim.log.levels.WARN then
-    vim.notify(txt, vim.log.levels.WARN, notify_opts)
-  end
-end
-function util.error(...)
-  if log_level == vim.log.levels.WARN then
-    vim.notify(
-      table.concat(vim.tbl_flatten { ... }),
-      vim.log.levels.WARN,
-      notify_opts
-    )
-  end
+function M.get_cwd()
+  return vim.fn.getcwd()
 end
 
-local pathSeparator = (function()
-  local jit = require "jit"
-  if jit then
-    local os = string.lower(jit.os)
-    if os == "linux" or os == "osx" or os == "bsd" then
-      return "/"
-    else
-      return "\\"
-    end
-  else
-    return package.config:sub(1, 1)
-  end
-end)()
+function M.get_current_buffer_file_path()
+  return vim.api.nvim_buf_get_name(0)
+end
 
--- Print to cmd line, always
-function util.print(msg)
-  if util.mods ~= "silent" then
-    local txt = string.format("Formatter: %s", msg)
-    vim.notify(txt, vim.log.levels.INFO, notify_opts)
+function M.get_current_buffer_file_name()
+  return vim.fn.fnamemodify(M.get_current_buffer_file_path(), ":t")
+end
+
+function M.get_current_buffer_file_dir()
+  return vim.fn.fnamemodify(M.get_current_buffer_file_path(), ":h")
+end
+
+function M.get_current_buffer_file_extension()
+  return vim.fn.fnamemodify(M.get_current_buffer_file_path(), ":e")
+end
+
+function M.quote_cmd_arg(arg)
+  return string.format("'%s'", arg)
+end
+
+-- TODO: check fnameescape or shellescape?
+function M.escape_path(arg)
+  return vim.fn.fnameescape(arg)
+end
+
+function M.wrap_sed_replace(pattern, replacement, flags)
+  return string.format("s/%s/%s/%s", pattern, replacement or "", flags or "")
+end
+
+-- TODO: check that this is okay for paths and ordinary strings
+function M.format_prettydiff_arg(name, value)
+  return string.format('%s:"%s"', name, value)
+end
+
+-- NOTE: to contributors
+-- NOTE: use these for "lua/formatter/filetypes"
+
+function M.withl(f, ...)
+  local argsl = { ... }
+  return function(...)
+    local argsr = { ... }
+    return f(unpack(argsl), unpack(argsr))
   end
 end
 
--- Generic logging
-function util.log(...)
-  if loggingEnabled then
-    vim.api.nvim_out_write(table.concat(vim.tbl_flatten { ... }) .. "\n")
+function M.withr(f, ...)
+  local argsr = { ... }
+  return function(...)
+    local argsl = { ... }
+    return f(unpack(argsl), unpack(argsr))
   end
 end
 
-function util.inspect(val)
-  if loggingEnabled then
-    print(vim.inspect(val))
+function M.copyf(f)
+  return function(...)
+    return f(...)
   end
 end
 
-function util.setLines(bufnr, startLine, endLine, lines)
-  return vim.api.nvim_buf_set_lines(bufnr, startLine, endLine, false, lines)
-end
+-----------------------------------------------------------------------------
+-- Tables
 
-function util.getLines(bufnr, startLine, endLine)
-  return vim.api.nvim_buf_get_lines(bufnr, startLine, endLine, true)
-end
-
-function util.isEmpty(s)
+function M.is_empty(s)
   if type(s) == "table" then
     for _, v in pairs(s) do
-      if not util.isEmpty(v) then
+      if not M.is_empty(v) then
         return false
       end
     end
@@ -96,7 +81,7 @@ function util.isEmpty(s)
   return s == nil or s == ""
 end
 
-function util.split(s, sep, plain)
+function M.split(s, sep, plain)
   if s ~= "" then
     local t = {}
     for c in vim.gsplit(s, sep, plain) do
@@ -106,7 +91,7 @@ function util.split(s, sep, plain)
   end
 end
 
-function util.isSame(a, b)
+function M.is_same(a, b)
   if type(a) ~= type(b) then
     return false
   end
@@ -115,7 +100,7 @@ function util.isSame(a, b)
       return false
     end
     for k, v in pairs(a) do
-      if not util.isSame(b[k], v) then
+      if not M.is_same(b[k], v) then
         return false
       end
     end
@@ -125,12 +110,23 @@ function util.isSame(a, b)
   end
 end
 
-function util.fireEvent(event)
+-----------------------------------------------------------------------------
+-- Vim
+
+function M.set_lines(bufnr, startLine, endLine, lines)
+  return vim.api.nvim_buf_set_lines(bufnr, startLine, endLine, false, lines)
+end
+
+function M.get_lines(bufnr, startLine, endLine)
+  return vim.api.nvim_buf_get_lines(bufnr, startLine, endLine, true)
+end
+
+function M.fire_event(event)
   local cmd = string.format("silent doautocmd <nomodeline> User %s", event)
   vim.api.nvim_command(cmd)
 end
 
-function util.getBufVar(buf, var)
+function M.get_buffer_variable(buf, var)
   local status, result = pcall(vim.api.nvim_buf_get_var, buf, var)
   if status then
     return result
@@ -138,108 +134,4 @@ function util.getBufVar(buf, var)
   return nil
 end
 
-function util.create_temp_file(bufname, input, opts)
-  local split_bufname = vim.split(bufname, pathSeparator)
-  local tempfile_prefix = opts.tempfile_prefix or "~formatting"
-  local tempfile_postfix = opts.tempfile_postfix or ""
-  local filename = ("%s_%d_%s%s"):format(
-    tempfile_prefix,
-    math.random(1, 1000000),
-    split_bufname[#split_bufname],
-    tempfile_postfix
-  )
-
-  split_bufname[#split_bufname] = nil
-  local tempfile_dir = table.concat(split_bufname, pathSeparator)
-  if tempfile_dir == "" then
-    tempfile_dir = "."
-  end
-  local tempfile_name = ("%s/%s"):format(
-    (opts.tempfile_dir or tempfile_dir),
-    filename
-  )
-
-  local tempfile = io.open(tempfile_name, "w+")
-  if not tempfile then
-    return nil
-  end
-
-  for _, line in pairs(input) do
-    tempfile:write(line .. "\n")
-  end
-  tempfile:flush()
-  tempfile:close()
-
-  return tempfile_name
-end
-
-function util.read_temp_file(tempfile_name)
-  local tempfile = io.open(tempfile_name, "r")
-  if tempfile == nil then
-    return
-  end
-  local lines = {}
-  for line in tempfile:lines() do
-    lines[#lines + 1] = line
-  end
-  tempfile:close()
-
-  return lines
-end
-
--- NOTE: change as needed
-function util.get_cwd()
-  return vim.fn.getcwd()
-end
-
--- NOTE: change as needed
-function util.get_current_buffer_file_path()
-  return vim.api.nvim_buf_get_name(0)
-end
-
-function util.get_current_buffer_file_name()
-  return vim.fn.fnamemodify(util.get_current_buffer_file_path(), ":t")
-end
-
-function util.get_current_buffer_file_dir()
-  return vim.fn.fnamemodify(util.get_current_buffer_file_path(), ":h")
-end
-
--- NOTE: change as needed
-function util.quote_cmd_arg(arg)
-  return string.format('"%s"', arg)
-end
-
--- NOTE: fnameescape or shellescape?
-function util.escape_path(arg)
-  return vim.fn.fnameescape(arg)
-end
-
--- TODO: check that this is okay for paths and ordinary strings
-function util.format_prettydiff_arg(name, value)
-  return string.format('%s:"%s"', name, value)
-end
-
-function util.withl(f, ...)
-  local argsl = { ... }
-  return function(...)
-    local argsr = { ... }
-    return f(unpack(argsl), unpack(argsr))
-  end
-end
-
-function util.withr(f, ...)
-  local argsr = { ... }
-  return function(...)
-    local argsl = { ... }
-    return f(unpack(argsl), unpack(argsr))
-  end
-end
-
-function util.copyf(f)
-  return function(...)
-    return f(...)
-  end
-end
-
-return util
+return M
