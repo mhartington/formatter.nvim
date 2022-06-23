@@ -59,6 +59,10 @@ local util = require "formatter.util"
 
 -- Provides the Format and FormatWrite commands
 require("formatter").setup {
+  -- Enable or disable logging
+  logging = true,
+  -- Set the log level
+  log_level = vim.log.levels.WARN,
   -- All formatter configurations are opt-in
   filetype = {
     -- Formatter configurations for filetype "lua" go here
