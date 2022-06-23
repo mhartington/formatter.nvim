@@ -85,14 +85,14 @@ function M.formatters_for_filetype(filetype)
 
   local result_formatters = {}
 
-  local filetype_formatters = M.value.filetype[filetype]
+  local filetype_formatters = M.values.filetype[filetype]
   if filetype_formatters then
     for _, formatter in ipairs(filetype_formatters) do
       table.insert(result_formatters, formatter)
     end
   end
 
-  local wildcard_formatters = M.value.filetype["*"]
+  local wildcard_formatters = M.values.filetype["*"]
   if wildcard_formatters then
     for _, formatter in ipairs(wildcard_formatters) do
       table.insert(result_formatters, formatter)
