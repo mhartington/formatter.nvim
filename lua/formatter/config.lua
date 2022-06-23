@@ -81,10 +81,25 @@ function M.formatters_for_filetype(filetype)
     return { unpack(M.values.filetype["*"] or {}) }
   end
 
-  return {
-    unpack(M.values.filetype[filetype] or {}),
-    unpack(M.values.filetype["*"] or {}),
-  }
+  -- NOTE: https://github.com/mhartington/formatter.nvim/issues/75#issuecomment-1164452502
+
+  local result_formatters = {}
+
+  local filetype_formatters = M.values.filetype[filetype]
+  if filetype_formatters then
+    for _, formatter in ipairs(filetype_formatters) do
+      table.insert(result_formatters, formatter)
+    end
+  end
+
+  local wildcard_formatters = M.values.filetype["*"]
+  if wildcard_formatters then
+    for _, formatter in ipairs(wildcard_formatters) do
+      table.insert(result_formatters, formatter)
+    end
+  end
+
+  return result_formatters
 end
 
 return M
