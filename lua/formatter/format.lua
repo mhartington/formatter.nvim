@@ -199,12 +199,16 @@ function M.start_task(configs, start_line, end_line, opts)
       log.info(string.format("No change necessary with %s", name))
     end
 
-    util.fire_event "FormatterPost"
+    util.fire_event(
+      "FormatterPost",
+      config.values.log_level > vim.log.levels.DEBUG
+    )
   end
 
-  -- AND start the loop
-
-  util.fire_event "FormatterPre"
+  util.fire_event(
+    "FormatterPre",
+    config.values.log_level > vim.log.levels.DEBUG
+  )
   F.step()
 end
 
