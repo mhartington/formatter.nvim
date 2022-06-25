@@ -16,6 +16,8 @@ function M.trace(txt)
     and config.values.log_level <= vim.log.levels.TRACE
     and not M.is_current_format_silent()
   then
+    -- NOTE: lsp thinks vim.notify takes one argument
+    ---@diagnostic disable-next-line
     vim.notify(txt, vim.log.levels.TRACE, M.notify_opts)
   end
 end
@@ -26,6 +28,8 @@ function M.debug(txt)
     and config.values.log_level <= vim.log.levels.DEBUG
     and not M.is_current_format_silent()
   then
+    -- NOTE: lsp thinks vim.notify takes one argument
+    ---@diagnostic disable-next-line
     vim.notify(txt, vim.log.levels.DEBUG, M.notify_opts)
   end
 end
@@ -36,6 +40,8 @@ function M.info(txt)
     and config.values.log_level <= vim.log.levels.INFO
     and not M.is_current_format_silent()
   then
+    -- NOTE: lsp thinks vim.notify takes one argument
+    ---@diagnostic disable-next-line
     vim.notify(txt, vim.log.levels.INFO, M.notify_opts)
   end
 end
@@ -46,6 +52,8 @@ function M.warn(txt)
     and config.values.log_level <= vim.log.levels.WARN
     and not M.is_current_format_silent()
   then
+    -- NOTE: lsp thinks vim.notify takes one argument
+    ---@diagnostic disable-next-line
     vim.notify(txt, vim.log.levels.WARN, M.notify_opts)
   end
 end
@@ -56,6 +64,8 @@ function M.error(txt)
     and config.values.log_level <= vim.log.levels.ERROR
     and not M.is_current_format_silent()
   then
+    -- NOTE: lsp thinks vim.notify takes one argument
+    ---@diagnostic disable-next-line
     vim.notify(txt, vim.log.levels.ERROR, M.notify_opts)
   end
 end

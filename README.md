@@ -15,6 +15,7 @@ a reference to create our own opt-in default formatter configurations.
 - Asynchronous execution
 - Opt-in default formatter configurations
 - Conditional formatting
+- Before/after format hooks
 
 ## Install
 
@@ -145,6 +146,20 @@ augroup FormatAutogroup
   autocmd BufWritePost * FormatWrite
 augroup END
 ```
+
+### Before/after format hooks
+
+You can execute code before and after formatting like so:
+```vim
+augroup FormatAutogroup
+  autocmd!
+  autocmd User FormatterPre lua print "This will print before formatting"
+  autocmd User FormatterPost lua print "This will print after formatting"
+augroup END
+```
+
+Note that these commands are executed using `silent` when the `log_level`
+is higher than `vim.log.levels.DEBUG`.
 
 ### Configuration specification
 

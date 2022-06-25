@@ -121,8 +121,12 @@ function M.get_lines(bufnr, startLine, endLine)
   return vim.api.nvim_buf_get_lines(bufnr, startLine, endLine, true)
 end
 
-function M.fire_event(event)
-  local cmd = string.format("silent doautocmd <nomodeline> User %s", event)
+function M.fire_event(event, silent)
+  local cmd = string.format(
+    "%s doautocmd <nomodeline> User %s",
+    silent and "silent" or "",
+    event
+  )
   vim.api.nvim_command(cmd)
 end
 
