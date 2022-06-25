@@ -29,6 +29,7 @@ CONTENTS
  - Written in `lua`
  - Asynchronous execution
  - Opt-in default formatter configurations
+ - Before/after format hooks
 
 
 ==============================================================================
@@ -164,6 +165,22 @@ Format and write after save asynchronously:
     autocmd BufWritePost * FormatWrite
   augroup END
 <
+
+                                                               *formatter-hooks*
+Before/after format hooks
+
+You can execute code before and after formatting like so:
+>
+  augroup FormatAutogroup
+    autocmd!
+    autocmd User FormatterPre lua print "This will print before formatting"
+    autocmd User FormatterPost lua print "This will print after formatting"
+  augroup END
+<
+
+Note that these commands are executed using `silent` when the `log_level`
+is higher than `vim.log.levels.DEBUG`.
+
 
 ------------------------------------------------------------------------------
                                                          *formatter-config-spec*
