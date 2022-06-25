@@ -1,7 +1,7 @@
 return function()
   return {
     exe = "zig",
-    args = { "fmt" },
-    stdin = false,
+    args = { "fmt", "--stdin" },
+    stdin = true,
   }
 end
