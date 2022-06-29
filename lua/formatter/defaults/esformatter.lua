@@ -1,7 +1,7 @@
 return function()
   return {
     exe = "esformatter",
-    stdin = 1,
+    stdin = true,
     try_node_modules = true,
   }
 end
