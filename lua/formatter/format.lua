@@ -170,6 +170,11 @@ function M.start_task(configs, start_line, end_line, opts)
   end
 
   function F.done()
+    if not vim.api.nvim_buf_is_valid(bufnr) then
+      log.info "Buffer become invalid while formatting, not applying formatting"
+      return
+    end
+
     if inital_changedtick ~= vim.api.nvim_buf_get_changedtick(bufnr) then
       log.warn "Buffer changed while formatting, not applying formatting"
       return
