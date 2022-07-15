@@ -28,4 +28,11 @@ function M.gofumports()
   }
 end
 
+function M.golines()
+  return {
+    exe = "golines",
+    stdin = true,
+  }
+end
+
 return M
