@@ -128,7 +128,7 @@ Feel free to contribute to this repository by creating or improving default
 configurations that everyone can use! The guide for contributing to default
 configurations is below.
 
-You can use the [`util` module](lua/formatter/util) which has various
+You can use the [`util` module](lua/formatter/util.lua) which has various
 functions that help with creating default configurations as shown above.
 
 ### Map keys
