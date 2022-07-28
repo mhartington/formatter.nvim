@@ -114,7 +114,14 @@ end
 -- Vim
 
 function M.set_lines(bufnr, startLine, endLine, lines)
-  return vim.api.nvim_buf_set_lines(bufnr, startLine, endLine, false, lines)
+  new_lines = {}
+  for _, val in ipairs(lines) do
+    if #val > 0 and vim.opt.fileformat:get() == "dos" then
+      table.insert(new_lines, string.sub(val, 0, #val - 1))
+    end
+  end
+
+  return vim.api.nvim_buf_set_lines(bufnr, startLine, endLine, false, new_lines)
 end
 
 function M.get_lines(bufnr, startLine, endLine)
