@@ -13,6 +13,7 @@ a reference to create our own opt-in default formatter configurations.
 
 - Written in `Lua`
 - Asynchronous execution
+- Buffer locking
 - Opt-in default formatter configurations
 - Conditional formatting
 - Before/after format hooks
@@ -58,7 +59,7 @@ Setup:
 -- Utilities for creating configurations
 local util = require "formatter.util"
 
--- Provides the Format and FormatWrite commands
+-- Provides the Format, FormatWrite, FormatLock, and FormatWriteLock commands
 require("formatter").setup {
   -- Enable or disable logging
   logging = true,
@@ -160,6 +161,12 @@ augroup END
 
 Note that these commands are executed using `silent` when the `log_level`
 is higher than `vim.log.levels.DEBUG`.
+
+### Buffer locking
+
+Use the `FormatLock` and `FormatWriteLock` commands instead of `Format` and
+`FormatWrite` to lock the buffer (set buffer option `modifiable` to false)
+while formatting.
 
 ### Configuration specification
 
