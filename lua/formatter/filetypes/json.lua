@@ -16,7 +16,8 @@ M.denofmt = util.copyf(defaults.denofmt)
 function M.jq()
   return {
     exe = "jq",
-    args = ".",
+    args = { "." },
+    stdin = true,
   }
 end
 
