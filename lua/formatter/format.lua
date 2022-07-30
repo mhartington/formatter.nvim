@@ -46,7 +46,7 @@ end
 
 function M.start_task(configs, start_line, end_line, opts)
   opts = vim.tbl_deep_extend("keep", opts or {}, {
-    sync = false,
+    lock = false,
     write = false,
   })
 
@@ -123,7 +123,7 @@ function M.start_task(configs, start_line, end_line, opts)
       return
     end
 
-    if opts.sync then
+    if opts.lock then
       vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
     end
 
@@ -180,7 +180,7 @@ function M.start_task(configs, start_line, end_line, opts)
       return
     end
 
-    if opts.sync then
+    if opts.lock then
       vim.api.nvim_buf_set_option(bufnr, "modifiable", true)
     end
 

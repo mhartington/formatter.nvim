@@ -14,10 +14,10 @@ command! -nargs=? -range=% -bar
 
 command! -nargs=? -range=% -bar
 \   -complete=customlist,s:formatter_complete
-\   FormatSync lua require("formatter.format").format(
-      <q-args>, <q-mods>, <line1>, <line2>, { sync = true })
+\   FormatLock lua require("formatter.format").format(
+      <q-args>, <q-mods>, <line1>, <line2>, { lock = true })
 
 command! -nargs=? -range=% -bar
 \   -complete=customlist,s:formatter_complete
-\   FormatWriteSync lua require("formatter.format").format(
-\     <q-args>, <q-mods>, <line1>, <line2>, { sync = true, write = true })
+\   FormatWriteLock lua require("formatter.format").format(
+\     <q-args>, <q-mods>, <line1>, <line2>, { lock = true, write = true })
