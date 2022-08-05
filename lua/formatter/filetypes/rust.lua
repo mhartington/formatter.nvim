@@ -2,7 +2,7 @@ local M = {}
 
 function M.rustfmt()
   return {
-    exe = "rustfmt",
+    exe = "rustfmt --edition 2021",
     stdin = true,
   }
 end
