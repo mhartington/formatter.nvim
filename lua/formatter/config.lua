@@ -63,7 +63,9 @@ function M.normalize_config(valid_config)
   end
   normalized = vim.tbl_deep_extend("force", normalized, valid_config)
 
-  normalized.logging = normalized.logging or M.default_config.logging
+  if normalized.logging == nil then
+    normalized.logging = M.default_config.logging
+  end
   normalized.log_level = normalized.log_level or M.default_config.log_level
   normalized.filetype = normalized.filetype or M.default_config.filetype
 

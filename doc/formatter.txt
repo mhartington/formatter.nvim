@@ -28,6 +28,7 @@ CONTENTS
 
  - Written in `lua`
  - Asynchronous execution
+ - Buffer locking
  - Opt-in default formatter configurations
  - Before/after format hooks
 
@@ -73,7 +74,7 @@ Setup:
   -- Utilities for creating configurations
   local util = require "formatter.util"
 
-  -- Provides the Format and FormatWrite commands
+  -- Provides the Format, FormatWrite, FormatLock, and FormatWriteLock commands
   require("formatter").setup {
     -- Enable or disable logging
     logging = true,
@@ -180,6 +181,13 @@ You can execute code before and after formatting like so:
 
 Note that these commands are executed using `silent` when the `log_level`
 is higher than `vim.log.levels.DEBUG`.
+
+                                                      *formatter-buffer-locking*
+Buffer locking
+
+Use the `FormatLock` and `FormatWriteLock` commands instead of `Format` and
+`FormatWrite` to lock the buffer (set buffer option `modifiable` to false)
+while formatting.
 
 
 ------------------------------------------------------------------------------
