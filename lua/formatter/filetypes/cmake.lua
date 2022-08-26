@@ -3,7 +3,7 @@ local M = {}
 function M.cmakeformat()
   return {
     exe = "cmake-format",
-    arg = { "-" },
+    args = { "-" },
     stdin = true,
   }
 end
