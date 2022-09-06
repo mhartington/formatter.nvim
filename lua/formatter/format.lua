@@ -37,7 +37,11 @@ function M.format(args, mods, start_line, end_line, opts)
         user_passed_formatters == nil or user_passed_formatters[formatter.exe]
       )
     then
-      table.insert(configs_to_run, { config = formatter, name = formatter.exe })
+      -- Use the `name` field if the provided `exe` is a function
+      -- otherwise, use the exe name
+      local name = type(formatter.exe) == 'function' and formatter.name or formatter.exe
+
+      table.insert(configs_to_run, { config = formatter, name = name })
     end
   end
 
@@ -129,6 +133,21 @@ function M.start_task(configs, start_line, end_line, opts)
 
     name = current.name
     ignore_exitcode = current.config.ignore_exitcode
+
+    if type(current.config.exe) == "function" then
+      local ok, maybe_err = pcall(current.config.exe, opts)
+
+      if not ok then
+        log.error(
+          string.format("Failed to run formatter %s", name .. ". " .. maybe_err)
+        )
+        return
+      end
+
+      -- Success
+      F.step()
+    end
+
     local cmd = { current.config.exe }
     if current.config.args ~= nil then
       for _, arg in ipairs(current.config.args) do
