@@ -20,7 +20,11 @@ M.lsp_formatting = function()
         -- This is a caught by the caller
         assert(
           res.err == nil,
-          string.format("LSP %s returned an error %s", client.name or string.format("client_id=%d", client_id), tostring(res.err))
+          string.format(
+            "LSP %s returned an error %s",
+            client.name or string.format("client_id=%d", client_id),
+            tostring(res.err)
+          )
         )
 
         if res == nil then
@@ -32,8 +36,11 @@ M.lsp_formatting = function()
         vim.lsp.util.apply_text_edits(res.result, bufnr, "utf-16")
 
         if opts.write then
-          -- :update is like :w but only if there's changes present
-          vim.cmd [[ update ]]
+          -- Run on the buffer we were given in case the user changed whilst the formatter was running
+          vim.api.nvim_buf_call(bufnr, function()
+            -- :update is like :w but only if there's changes present
+            vim.cmd [[ update ]]
+          end)
         end
       end
     end,
