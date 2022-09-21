@@ -1,14 +1,8 @@
 local M = {}
 
-function M.latexindent()
-  return {
-    exe = "latexindent",
-    args = {
-      "-g",
-      "/dev/null",
-    },
-    stdin = true,
-  }
-end
+local util = require "formatter.util"
+local defaults = require "formatter.defaults"
+
+M.latexindent = util.copyf(defaults.latexindent)
 
 return M
