@@ -15,4 +15,12 @@ function M.pyaml()
   }
 end
 
+function M.yamlfmt()
+  return {
+    exe = "yamlfmt",
+    args = { "-in" },
+    stdin = true,
+  }
+end
+
 return M
