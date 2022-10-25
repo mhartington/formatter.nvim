@@ -28,8 +28,13 @@ function M.format(args, mods, start_line, end_line, opts)
     log.info(string.format("No formatter defined for %s files", filetype))
     return
   end
-  for _, formatter_config_function in ipairs(formatters) do
-    local formatter = formatter_config_function()
+  for _, formatter_config in ipairs(formatters) do
+    local formatter
+    if type(formatter_config) == "table" then
+      formatter = formatter_config
+    else
+      formatter = formatter_config()
+    end
     if
       formatter
       and formatter.exe
