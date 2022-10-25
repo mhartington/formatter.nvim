@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - uses: JohnnyMorganz/stylua-action@1.1.2
+      - uses: JohnnyMorganz/stylua-action@v1.1.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --check lua
