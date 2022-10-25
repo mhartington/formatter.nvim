@@ -29,7 +29,7 @@ end
 
 -- TODO: check fnameescape or shellescape?
 function M.escape_path(arg)
-  return vim.fn.fnameescape(arg)
+  return vim.fn.shellescape(arg, true)
 end
 
 function M.wrap_sed_replace(pattern, replacement, flags)

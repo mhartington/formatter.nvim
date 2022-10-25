@@ -156,7 +156,7 @@ function M.start_task(configs, start_line, end_line, opts)
       -- TODO: handle null tempfile
       local tempfile_name = tempfile.create(bufname, output, current.config)
       if not current.config.no_append then
-        table.insert(cmd, tempfile_name)
+        table.insert(cmd, util.escape_path(tempfile_name))
       end
       local job_id = vim.fn.jobstart(table.concat(cmd, " "), job_options)
       tempfiles[job_id] = tempfile_name
