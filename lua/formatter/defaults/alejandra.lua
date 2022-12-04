@@ -1,8 +1,7 @@
 return function()
-    return {
-        exe = 'alejandra',
-        stdin = true,
-        args = {
-        },
-    }
+  return {
+    exe = "alejandra",
+    stdin = true,
+    args = {},
+  }
 end

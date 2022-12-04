@@ -1,8 +1,7 @@
 return function()
-    return {
-        exe = 'nixfmt',
-        stdin = true,
-        args = {
-        },
-    }
+  return {
+    exe = "nixfmt",
+    stdin = true,
+    args = {},
+  }
 end
