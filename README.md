@@ -21,32 +21,38 @@ a reference to create our own opt-in default formatter configurations.
 ## Install
 
 With [`packer.nvim`](https://github.com/wbthomason/packer.nvim):
+
 ```lua
 require('packer').use { 'mhartington/formatter.nvim' }
 ```
 
 With [`paq-nvim`](https://github.com/savq/paq-nvim):
+
 ```lua
 require("paq") { 'mhartington/formatter.nvim' }
 ```
 
 With [`vim-plug`](https://github.com/junegunn/vim-plug):
+
 ```vim
 Plug 'mhartington/formatter.nvim'
 ```
 
 With [`Vundle.vim`](https://github.com/VundleVim/Vundle.vim):
+
 ```vim
 Plugin 'mhartington/formatter.nvim'
 ```
 
 With [`vim-pathogen`](https://github.com/tpope/vim-pathogen):
+
 ```shell
 cd ~/.vim/bundle && \
 git clone https://github.com/mhartington/formatter.nvim
 ```
 
 With [`dein.vim`](https://github.com/Shougo/dein.vim):
+
 ```vim
 call dein#add('mhartington/formatter.nvim')
 ```
@@ -67,11 +73,28 @@ require("formatter").setup {
   log_level = vim.log.levels.WARN,
   -- All formatter configurations are opt-in
   filetype = {
-    -- Formatter configurations for filetype "lua" go here
-    -- and will be executed in order
+    -- Example for web devs, can just make everything prettier!
+    -- refers to the 'formatter' folder which just lists tools, like prettier here
+    -- https://github.com/mhartington/formatter.nvim/blob/master/lua/formatter/defaults/prettier.lua
+    javascriptreact = { require 'formatter.defaults.prettier' },
+    javascript = { require 'formatter.defaults.prettier' },
+    typescriptreact = { require 'formatter.defaults.prettier' },
+    typescript = { require 'formatter.defaults.prettier' },
+    json = { require 'formatter.defaults.prettier' },
+    markdown = { require 'formatter.defaults.prettier' },
+    html = { require 'formatter.defaults.prettier' },
+    css = { require 'formatter.defaults.prettier' },
+
+    -- Format rust using rustfmt
+    -- refers to the 'filetypes' folder here
+    -- https://github.com/mhartington/formatter.nvim/blob/master/lua/formatter/filetypes/rust.lua
+    rust = { require('formatter.filetypes.rust').rustfmt },
+
+    -- Advanced formatter configurations for filetype "lua" -- will be executed in order
     lua = {
-      -- "formatter.filetypes.lua" defines default configurations for the
-      -- "lua" filetype
+      -- Format lua using stylua
+      -- refers to the 'filetypes' folder here
+      -- https://github.com/mhartington/formatter.nvim/blob/master/lua/formatter/filetypes/lua.lua
       require("formatter.filetypes.lua").stylua,
 
       -- You can also define your own configuration
@@ -151,6 +174,7 @@ augroup END
 ### Before/after format hooks
 
 You can execute code before and after formatting like so:
+
 ```vim
 augroup FormatAutogroup
   autocmd!
