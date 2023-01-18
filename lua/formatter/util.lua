@@ -138,4 +138,26 @@ function M.get_buffer_variable(buf, var)
   return nil
 end
 
+--- get a table that maps a window to a view
+---@see vim.fn.winsaveview()
+function M.get_views_for_this_buffer()
+  local windows_containing_this_buffer = vim.fn.win_findbuf(vim.fn.bufnr())
+  local window_to_view = {}
+  for _, w in ipairs(windows_containing_this_buffer) do
+    vim.api.nvim_win_call(w, function()
+      window_to_view[w] = vim.fn.winsaveview()
+    end)
+  end
+  return window_to_view
+end
+
+--- restore view for each window
+---@param window_to_view table maps window to a view
+---@see vim.fn.winrestview()
+function M.restore_view_per_window(window_to_view)
+  for w, view in pairs(window_to_view) do
+    vim.api.nvim_win_call(w, function() vim.fn.winrestview(view) end)
+  end
+end
+
 return M
