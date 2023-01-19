@@ -156,7 +156,9 @@ end
 ---@see vim.fn.winrestview()
 function M.restore_view_per_window(window_to_view)
   for w, view in pairs(window_to_view) do
-    vim.api.nvim_win_call(w, function() vim.fn.winrestview(view) end)
+    if vim.api.nvim_win_is_valid(w) then
+      vim.api.nvim_win_call(w, function() vim.fn.winrestview(view) end)
+    end
   end
 end
 
