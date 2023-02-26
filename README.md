@@ -190,7 +190,7 @@ Each formatter configuration should return a table that consist of:
   code (optional)
 - `transform` : pass a function that takes in the formatted text and returns
   the text to be applied to the buffer (optional) (see
-  [`ruby` `rubocop`](lua/formatter/filetypes/ruby) default formatter
+  [`ruby` `rubocop`](https://github.com/mhartington/formatter.nvim/blob/af59d125957b49577acdc927c013436f209c9843/lua/formatter/filetypes/ruby.lua#L16) default formatter
   configuration as an example)
 - `tempfile_dir`: directory for temp file when not using `stdin` (optional)
 - `tempfile_prefix`: prefix for temp file when not using `stdin` (optional)
