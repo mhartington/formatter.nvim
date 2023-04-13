@@ -195,7 +195,7 @@ function M.start_task(configs, start_line, end_line, opts)
     end
 
     if not util.is_same(input, output) then
-      local view = vim.fn.winsaveview()
+      local window_to_view = util.get_views_for_this_buffer()
       if not output then
         log.error(
           string.format(
@@ -207,7 +207,7 @@ function M.start_task(configs, start_line, end_line, opts)
         return
       end
       util.set_lines(bufnr, start_line, end_line, output)
-      vim.fn.winrestview(view)
+      util.restore_view_per_window(window_to_view)
 
       if opts.write and bufnr == vim.api.nvim_get_current_buf() then
         M.saving_currently = true
