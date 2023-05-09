@@ -21,4 +21,14 @@ M.dotnetformat = function()
   }
 end
 
+M.csharpier = function()
+  return {
+    exe = "dotnet",
+    args = {
+      "csharpier",
+    },
+    stdin = true,
+  }
+end
+
 return M
