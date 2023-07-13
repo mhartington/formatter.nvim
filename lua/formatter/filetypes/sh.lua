@@ -15,4 +15,12 @@ function M.shfmt()
   }
 end
 
+function M.shellharden()
+  return {
+    exe = "shellharden",
+    stdin = true,
+    args = { "--transform", "''" },
+  }
+end
+
 return M
