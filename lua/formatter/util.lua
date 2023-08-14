@@ -52,7 +52,7 @@ function M.get_available_formatters_for_ft(ft)
         if ft == "*" or ft == formatter_filetype then
             for _, formatter_function in ipairs(formatter_functions) do
                 local formatter_info = formatter_function()
-                table.insert(available_formatters, formatter_info.exe)
+                table.insert(available_formatters, formatter_info)
             end
         end
     end
