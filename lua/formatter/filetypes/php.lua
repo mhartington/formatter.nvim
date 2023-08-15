@@ -5,5 +5,6 @@ local util = require "formatter.util"
 
 M.phpcbf = util.copyf(defaults.phpcbf)
 M.php_cs_fixer = util.copyf(defaults.php_cs_fixer)
+M.pint = util.copyf(defaults.pint)
 
 return M
