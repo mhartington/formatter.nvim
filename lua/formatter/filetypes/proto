@@ -1,0 +1,11 @@
+local M = {}
+
+function M.buf()
+  return { 
+    exe = "buf",
+    args = { "format" },
+    stdin = true,
+  }
+end
+
+return M
