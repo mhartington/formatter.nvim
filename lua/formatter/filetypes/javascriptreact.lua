@@ -25,4 +25,6 @@ M.semistandard = util.copyf(defaults.semistandard)
 
 M.clangformat = util.copyf(defaults.clangformat)
 
+M.rome = util.copyf(defaults.rome)
+
 return M
