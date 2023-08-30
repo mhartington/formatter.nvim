@@ -17,7 +17,7 @@ M.clangformat = util.copyf(defaults.clangformat)
 
 M.denofmt = util.copyf(defaults.denofmt)
 
-M.rome = util.copyf(defaults.biome)
+M.biome = util.copyf(defaults.biome)
 
 -- NOTE: tslint is deprecated, so I don't want to add it here from neoformat
 -- function M.tslint()
