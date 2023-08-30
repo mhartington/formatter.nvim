@@ -2,7 +2,7 @@ local util = require "formatter.util"
 
 return function()
   return {
-    exe = "rome",
+    exe = "biome",
     args = {
         "format",
         "--stdin-file-path",
