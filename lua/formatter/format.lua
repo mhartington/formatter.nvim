@@ -155,7 +155,11 @@ function M.start_task(configs, start_line, end_line, opts)
 
     if current.config.stdin then
       local job_id = vim.fn.jobstart(table.concat(cmd, " "), job_options)
-      vim.fn.chansend(job_id, output)
+
+      if next(output) ~= nil then
+        vim.fn.chansend(job_id, output)
+      end
+
       vim.fn.chanclose(job_id, "stdin")
     else
       -- TODO: handle null tempfile
