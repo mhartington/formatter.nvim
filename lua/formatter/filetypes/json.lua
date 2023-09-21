@@ -13,6 +13,8 @@ M.prettierd = util.copyf(defaults.prettierd)
 
 M.denofmt = util.copyf(defaults.denofmt)
 
+M.biome = util.copyf(defaults.biome)
+
 function M.jq()
   return {
     exe = "jq",
