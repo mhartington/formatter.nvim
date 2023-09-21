@@ -19,12 +19,21 @@ function M.create(buffer_path, content, options)
   local buffer_dir = vim.fn.fnamemodify(buffer_path, ":h")
   local buffer_name = vim.fn.fnamemodify(buffer_path, ":t")
 
-  local filename = ("%s_%d_%s_%s"):format(
-    options.tempfile_prefix or "~formatter",
-    math.random(1, 1000000),
-    buffer_name,
-    options.tempfile_postfix or ""
-  )
+  local filename
+  if type(options.tempfile_postfix) == "string" then
+    filename = ("%s_%d_%s_%s"):format(
+      options.tempfile_prefix or "~formatter",
+      math.random(1, 1000000),
+      buffer_name,
+      options.tempfile_postfix
+    )
+  else
+    filename = ("%s_%d_%s"):format(
+      options.tempfile_prefix or "~formatter",
+      math.random(1, 1000000),
+      buffer_name
+    )
+  end
 
   local path = (options.tempfile_dir or buffer_dir)
     .. M.path_separator
