@@ -183,7 +183,7 @@ Each formatter configuration should return a table that consist of:
 - `stdin`: if it should use the standard input (optional)
 - `cwd` : the path to run the program from (optional)
 - `try_node_modules`: tries to run a formatter from locally install npm
-  packages (optional) (to be implemented)
+  packages (optional)
 - `no_append` : don't append the path of the file to the formatter command
   (optional)
 - `ignore_exitcode` : set to true if the program expects non-zero success exit
@@ -205,9 +205,9 @@ formatted causes, for example, `clang-format` to search for the nearest
 
 #### `try_node_modules`
 
-The `try_node_modules` argument is not yet implemented, but feel free to use
-this argument in your configurations. When we add support for it, you get
-the `node_modules` package scanning functionality automatically!
+The `try_node_modules` argument causes formatter.nvim to look for the formatter
+in `node_modules/.bin` before $PATH. `node_modules` path will be resolved only
+once per buffer and saved to `b:formatter_node_modules`.
 
 #### `no_append`
 
