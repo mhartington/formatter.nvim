@@ -42,7 +42,7 @@ end
 function M.ruff()
   return {
     exe = "ruff",
-    args = { "--fix", "-" },
+    args = { "--fix", "-e", "-n", "--stdin-filename", "$FILENAME", "-" },
     stdin = true,
   }
 end
