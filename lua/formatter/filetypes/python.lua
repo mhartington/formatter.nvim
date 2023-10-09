@@ -39,6 +39,14 @@ function M.black()
   }
 end
 
+function M.ruff()
+  return {
+    exe = "ruff",
+    args = { "--fix", "-" },
+    stdin = true,
+  }
+end
+
 function M.pyment()
   return {
     exe = "pyment",
