@@ -25,4 +25,6 @@ M.denofmt = util.copyf(defaults.denofmt)
 
 M.semistandard = util.copyf(defaults.semistandard)
 
+M.biome = util.copyf(defaults.biome)
+
 return M
