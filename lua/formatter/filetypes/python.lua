@@ -41,8 +41,8 @@ end
 
 function M.ruff()
   return {
-    exe = "ruff format",
-    args = { "-q", "-" },
+    exe = "ruff",
+    args = { "format", "-q", "-" },
     stdin = true,
   }
 end
