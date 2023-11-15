@@ -25,4 +25,6 @@ M.semistandard = util.copyf(defaults.semistandard)
 
 M.clangformat = util.copyf(defaults.clangformat)
 
+M.biome = util.copyf(defaults.biome)
+
 return M

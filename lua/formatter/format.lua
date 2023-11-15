@@ -160,6 +160,8 @@ function M.start_task(configs, start_line, end_line, opts)
     else
       -- TODO: handle null tempfile
       local tempfile_name = tempfile.create(bufname, output, current.config)
+      log.debug(string.format("Formatting temporary file at %s", tempfile_name))
+
       if not current.config.no_append then
         table.insert(cmd, util.escape_path(tempfile_name))
       end
