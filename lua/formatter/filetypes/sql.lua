@@ -11,8 +11,7 @@ function M.sqlfluff()
   return {
     exe = "sqlfluff",
     args = {
-      "fix",
-      "--force",
+      "format",
       "--disable-progress-bar",
       "--nocolor",
       "-",
