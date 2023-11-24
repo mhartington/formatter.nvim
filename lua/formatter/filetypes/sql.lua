@@ -7,4 +7,20 @@ function M.pgformat()
   }
 end
 
+function M.sqlfluff_postgres()
+  return {
+    exe = "sqlfluff",
+    args = {
+      "fix",
+      "--disable-progress-bar",
+      "-f",
+      "-n",
+      "-",
+      "--dialect",
+      "postgres",
+    },
+    stdin = true,
+  }
+end
+
 return M
