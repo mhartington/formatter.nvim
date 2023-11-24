@@ -16,4 +16,12 @@ function M.tidy()
   }
 end
 
+function M.xmllint()
+  return {
+    exe = "xmllint",
+    args = { "--format", "-" },
+    stdin = true,
+  }
+end
+
 return M
