@@ -63,4 +63,12 @@ function M.pydevf()
   }
 end
 
+function M.autoflake()
+  return {
+    exe = "autoflake",
+    args = { "--quiet", "-" },
+    stdin = true,
+  }
+end
+
 return M
