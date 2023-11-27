@@ -181,4 +181,32 @@ function M.restore_view_per_window(window_to_view)
     end
 end
 
+--- Find the closest node_modules path
+function M.find_node_modules(dir)
+  for p in vim.fs.parents(vim.fs.normalize(dir) .. "/") do
+    local node_modules = p .. "/node_modules"
+    if vim.fn.isdirectory(node_modules) == 1 then
+      return node_modules
+    end
+  end
+end
+
+function M.get_node_modules_bin_path(node_modules)
+  if not node_modules then
+    return nil
+  end
+
+  local bin_path = node_modules .. "/.bin"
+  if vim.fn.isdirectory(bin_path) ~= 1 then
+    return nil
+  end
+  return bin_path
+end
+
+if vim.fn.has("win32") == 1 then
+  M.path_separator = ";"
+else
+  M.path_separator = ":"
+end
+
 return M

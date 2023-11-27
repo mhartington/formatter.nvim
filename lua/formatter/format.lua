@@ -68,6 +68,7 @@ function M.start_task(configs, start_line, end_line, opts)
   local buf_skip_format = util.get_buffer_variable(bufnr, "formatter_skip_buf")
     or false
   local tempfiles = {}
+  local try_node_modules_path
 
   if buf_skip_format then
     log.info "Formatting turned off for buffer"
@@ -152,6 +153,40 @@ function M.start_task(configs, start_line, end_line, opts)
       stderr_buffered = true,
       cwd = current.config.cwd or vim.fn.getcwd(),
     }
+
+    if current.config.try_node_modules then
+      if try_node_modules_path == nil then
+        local node_modules = vim.b.formatter_node_modules
+
+        if not node_modules then
+          local search_path
+          if bufname == "" then
+            search_path = job_options.cwd
+          else
+            search_path = vim.fs.dirname(bufname)
+          end
+          node_modules = util.find_node_modules(search_path)
+          vim.b.formatter_node_modules = node_modules or ""
+        elseif node_modules == "" then
+          node_modules = nil
+        end
+
+        local binpath = util.get_node_modules_bin_path(node_modules)
+        if binpath then
+          try_node_modules_path = binpath
+            .. util.path_separator
+            .. vim.fn.getenv("PATH")
+        else
+          try_node_modules_path = false
+        end
+      end
+
+      if try_node_modules_path then
+        job_options.env = {
+          PATH = try_node_modules_path,
+        }
+      end
+    end
 
     if current.config.stdin then
       local job_id = vim.fn.jobstart(table.concat(cmd, " "), job_options)
