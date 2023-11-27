@@ -7,4 +7,18 @@ function M.pgformat()
   }
 end
 
+function M.sqlfluff()
+  return {
+    exe = "sqlfluff",
+    args = {
+      "format",
+      "--disable-progress-bar",
+      "--nocolor",
+      "-",
+    },
+    stdin = true,
+    ignore_exitcode = true,
+  }
+end
+
 return M
