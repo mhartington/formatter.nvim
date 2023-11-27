@@ -1,3 +1,6 @@
+local defaults = require "formatter.defaults"
+local util = require "formatter.util"
+
 local M = {}
 
 function M.tidy()
@@ -15,5 +18,7 @@ function M.tidy()
     try_node_exe = true,
   }
 end
+
+M.xmlformat = util.copyf(defaults.xmlformat)
 
 return M
