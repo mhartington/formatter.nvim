@@ -1,6 +1,7 @@
-local M = {}
-
+local defaults = require "formatter.defaults"
 local util = require "formatter.util"
+
+local M = {}
 
 function M.erbformatter()
   return {
@@ -9,5 +10,7 @@ function M.erbformatter()
     stdin = true,
   }
 end
+
+M.htmlbeautifier = util.copyf(defaults.htmlbeautifier)
 
 return M
