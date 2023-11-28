@@ -116,6 +116,9 @@ function M.start_task(configs, start_line, end_line, opts)
 
       -- Success
       if ignore_exitcode or data == 0 then
+        if current_output == nil then
+          current_output = { "" }
+        end
         log.info(string.format("Finished running %s", name))
         output = transform and transform(current_output) or current_output
       end
