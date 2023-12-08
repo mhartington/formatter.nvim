@@ -1,4 +1,3 @@
-local util = require "formatter.util"
 local M = {}
 
 function M.beautysh()
