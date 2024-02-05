@@ -51,6 +51,17 @@ With [`dein.vim`](https://github.com/Shougo/dein.vim):
 call dein#add('mhartington/formatter.nvim')
 ```
 
+## Commands
+
+```vim
+[range]FormatAs {filetype}
+```
+
+Formats the range (defaulting to the whole file) as `{filetype}`, useful if you
+want to format code of `{filetype}` when embedded in a file of another
+filetype, for e.g. format a javascript snippet when inside markdown, or SQL
+inside of javascript, etc.
+
 ## Configure
 
 Setup:

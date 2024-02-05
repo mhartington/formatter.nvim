@@ -7,6 +7,11 @@ command! -nargs=? -range=% -bar
 \   Format lua require("formatter.format").format(
 \     <q-args>, <q-mods>, <line1>, <line2>)
 
+command! -nargs=1 -range=% -bar
+\   -complete=filetype
+\   FormatAs lua require("formatter.format").format_as(
+\     <q-args>, <q-mods>, <line1>, <line2>)
+
 command! -nargs=? -range=% -bar
 \   -complete=customlist,s:formatter_complete
 \   FormatWrite lua require("formatter.format").format(
