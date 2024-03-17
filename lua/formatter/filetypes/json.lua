@@ -26,7 +26,7 @@ end
 function M.fixjson()
   return {
     exe = "fixjson",
-    args = { "--stdin-filename", util.get_current_buffer_file_name() },
+    args = { "--stdin-filename", "$FILE_NAME" },
     stdin = true,
     try_node_modules = true,
   }

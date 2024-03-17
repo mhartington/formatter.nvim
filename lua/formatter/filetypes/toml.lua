@@ -4,7 +4,7 @@ function M.taplo()
   local util = require("formatter.util")
   return {
     exe = "taplo",
-    args = { "fmt", "--stdin-filepath", util.escape_path(util.get_current_buffer_file_path()),"-" },
+    args = { "fmt", "--stdin-filepath", "$FILE_PATH","-" },
     stdin = true,
     try_node_modules = true,
   }

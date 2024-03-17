@@ -141,7 +141,13 @@ function M.start_task(configs, start_line, end_line, opts)
     local cmd = { current.config.exe }
     if current.config.args ~= nil then
       for _, arg in ipairs(current.config.args) do
-        table.insert(cmd, arg)
+        if arg == "$FILE_NAME" then
+          table.insert(cmd, util.escape_path(vim.fn.fnamemodify(bufname, ":t")))
+        elseif arg == "$FILE_PATH" then
+          table.insert(cmd, util.escape_path(bufname))
+        else
+          table.insert(cmd, arg)
+        end
       end
     end
 

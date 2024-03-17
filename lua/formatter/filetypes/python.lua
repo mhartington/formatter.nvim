@@ -19,7 +19,7 @@ function M.isort()
   local util = require("formatter.util")
   return {
     exe = "isort",
-    args = { "-q", "--filename", util.escape_path(util.get_current_buffer_file_path()), "-" },
+    args = { "-q", "--filename", "$FILE_NAME", "-" },
     stdin = true,
   }
 end
@@ -36,7 +36,7 @@ function M.black()
   local util = require("formatter.util")
   return {
     exe = "black",
-    args = { "-q", "--stdin-filename", util.escape_path(util.get_current_buffer_file_name()), "-" },
+    args = { "-q", "--stdin-filename", "$FILE_NAME", "-" },
     stdin = true,
   }
 end
