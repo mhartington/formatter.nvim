@@ -7,13 +7,13 @@ local util = require "formatter.util"
 
 function M.format(args, mods, start_line, end_line, opts)
   if M.saving_currently then
-    return
+    return false
   end
 
   local modifiable = vim.bo.modifiable
   if not modifiable then
     log.info "Buffer is not modifiable"
-    return
+    return false
   end
 
   log.current_format_mods = mods
@@ -26,7 +26,7 @@ function M.format(args, mods, start_line, end_line, opts)
   -- No formatters defined for the given file type
   if util.is_empty(formatters) then
     log.info(string.format("No formatter defined for %s files", filetype))
-    return
+    return false
   end
   for _, formatter_config in ipairs(formatters) do
     local formatter
@@ -47,6 +47,7 @@ function M.format(args, mods, start_line, end_line, opts)
   end
 
   M.start_task(configs_to_run, start_line, end_line, opts)
+  return true
 end
 
 function M.start_task(configs, start_line, end_line, opts)
