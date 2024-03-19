@@ -4,7 +4,7 @@ return function()
     exe = "ocamlformat",
     args = {
       "--enable-outside-detected-project",
-      util.escape_path(util.get_current_buffer_file_name()),
+      "$FILE_PATH",
     },
     stdin = true,
   }

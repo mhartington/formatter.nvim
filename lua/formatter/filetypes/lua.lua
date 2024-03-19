@@ -19,7 +19,7 @@ end
 function M.luaformat()
   return {
     exe = "lua-format",
-    args = {util.escape_path(util.get_current_buffer_file_path())},
+    args = {"$FILE_PATH"},
     stdin = true
   }
 end
@@ -30,7 +30,7 @@ function M.stylua()
     args = {
       "--search-parent-directories",
       "--stdin-filepath",
-      util.escape_path(util.get_current_buffer_file_path()),
+      "$FILE_PATH",
       "--",
       "-",
     },

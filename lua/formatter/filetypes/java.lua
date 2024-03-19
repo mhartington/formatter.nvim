@@ -15,7 +15,7 @@ function M.google_java_format()
         exe = "google-java-format",
         args = {
             "--aosp",
-            util.escape_path(util.get_current_buffer_file_path()),
+            "$FILE_PATH",
             "--replace"
         },
         stdin = true

@@ -6,7 +6,7 @@ return function()
     args = {
       "--stdin",
       "--stdin-filename",
-      util.escape_path(util.get_current_buffer_file_path()),
+      "$FILE_PATH",
       "--fix-to-stdout",
     },
     stdin = true,

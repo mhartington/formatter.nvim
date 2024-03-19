@@ -8,7 +8,7 @@ function M.rubocop()
     args = {
       "--fix-layout",
       "--stdin",
-      util.escape_path(util.get_current_buffer_file_name()),
+      "$FILE_PATH",
       "--format",
       "files",
       "--stderr",
@@ -26,7 +26,7 @@ function M.standardrb()
       "quiet",
       "--stderr",
       "--stdin",
-      util.escape_path(util.get_current_buffer_file_path()),
+      "$FILE_PATH",
     },
     stdin = true,
   }
