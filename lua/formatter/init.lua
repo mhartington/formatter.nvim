@@ -9,7 +9,11 @@ function M.setup(user_config)
     return
   end
 
-  config.values = config.normalize_config(user_config)
+  config.values = vim.tbl_deep_extend(
+    "force",
+    config.values,
+    config.normalize_config(user_config)
+  )
 end
 
 return M
