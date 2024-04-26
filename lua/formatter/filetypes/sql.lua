@@ -7,6 +7,13 @@ function M.pgformat()
   }
 end
 
+function M.sql_formatter()
+  return {
+    exe = "sql-formatter",
+    stdin = true,
+  }
+end
+
 function M.sqlfluff()
   return {
     exe = "sqlfluff",
