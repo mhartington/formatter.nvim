@@ -7,6 +7,14 @@ M.prettier = util.copyf(defaults.prettier)
 
 M.prettierd = util.copyf(defaults.prettierd)
 
+function M.mdformat()
+  return {
+    exe = "mdformat",
+    args = { "-" },
+    stdin = true,
+  }
+end
+
 function M.denofmt()
   local denofmt = util.copyf(defaults.denofmt)()
   table.insert(denofmt.args, "--ext")
