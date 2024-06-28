@@ -35,4 +35,11 @@ function M.golines()
   }
 end
 
+function M.goimports_reviser()
+  return {
+    exe = "goimports-reviser",
+    stdin = true,
+  }
+end
+
 return M
