@@ -38,7 +38,7 @@ end
 function M.goimports_reviser()
   return {
     exe = "goimports-reviser",
-    stdin = true,
+    stdin = false,
   }
 end
 
