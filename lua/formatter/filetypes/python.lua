@@ -49,6 +49,21 @@ function M.ruff()
   }
 end
 
+function M.iruff()
+  return {
+    exe = "ruff",
+    args = {
+      "check",
+      "-q",
+      "--select",
+      "I",
+      "--fix",
+      "-",
+    },
+    stdin = true,
+  }
+end
+
 function M.pyment()
   return {
     exe = "pyment",
