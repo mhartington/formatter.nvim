@@ -5,7 +5,7 @@ local util = require "formatter.util"
 function M.clangformat()
     return {
         exe = "clang-format",
-        args = {"--style=Google", "--assume-filename=.java"},
+        args = {"--assume-filename=.java"},
         stdin = true
     }
 end
