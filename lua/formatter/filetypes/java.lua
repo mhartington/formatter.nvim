@@ -10,6 +10,15 @@ function M.clangformat()
     }
 end
 
+function M.ideaformat()
+  return {
+    exe = "idea format",
+    args = { "-allowDefaults" },
+    stdin = false,
+  }
+end
+
+
 function M.google_java_format()
     return {
         exe = "google-java-format",
