@@ -35,4 +35,15 @@ function M.golines()
   }
 end
 
+function M.goimports_reviser()
+  return {
+    exe = "goimports-reviser",
+    args = {
+      "-rm-unused -set-alias -format",
+      '-imports-order "std,company,project,general"',
+    },
+    stdin = true
+  }
+end
+
 return M
