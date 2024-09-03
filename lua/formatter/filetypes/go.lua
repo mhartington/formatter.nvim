@@ -41,6 +41,7 @@ function M.goimports_reviser()
     args = {
       "-rm-unused -set-alias -format",
       '-imports-order "std,company,project,general"',
+      '-output stdout',
     },
     stdin = true
   }
