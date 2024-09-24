@@ -134,7 +134,8 @@ function M.start_task(configs, start_line, end_line, opts)
     end
 
     if opts.lock then
-      vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
+      vim.api.nvim_set_option_value("modifiable", false, { buf = bufnr })
+      -- vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
     end
 
     name = current.name
@@ -179,7 +180,7 @@ function M.start_task(configs, start_line, end_line, opts)
         if binpath then
           try_node_modules_path = binpath
             .. util.path_separator
-            .. vim.fn.getenv("PATH")
+            .. vim.fn.getenv "PATH"
         else
           try_node_modules_path = false
         end
@@ -232,7 +233,8 @@ function M.start_task(configs, start_line, end_line, opts)
     end
 
     if opts.lock then
-      vim.api.nvim_buf_set_option(bufnr, "modifiable", true)
+      -- vim.api.nvim_buf_set_option(bufnr, "modifiable", true)
+      vim.api.nvim_set_option_value("modifiable", true, { buf = bufnr })
     end
 
     if not util.is_same(input, output) then
@@ -247,7 +249,8 @@ function M.start_task(configs, start_line, end_line, opts)
         )
         return
       end
-      util.set_lines(bufnr, start_line, end_line, output)
+      util.update_lines(bufnr, input, output)
+
       util.restore_view_per_window(window_to_view)
 
       if opts.write and bufnr == vim.api.nvim_get_current_buf() then

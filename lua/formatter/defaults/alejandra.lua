@@ -2,6 +2,6 @@ return function()
   return {
     exe = "alejandra",
     stdin = true,
-    args = {"--quiet"},
+    args = { "--quiet" },
   }
 end
