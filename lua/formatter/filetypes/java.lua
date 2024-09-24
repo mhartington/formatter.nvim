@@ -5,10 +5,19 @@ local util = require "formatter.util"
 function M.clangformat()
     return {
         exe = "clang-format",
-        args = {"--style=Google", "--assume-filename=.java"},
+        args = {"--assume-filename=.java"},
         stdin = true
     }
 end
+
+function M.ideaformat()
+  return {
+    exe = "idea format",
+    args = { "-allowDefaults" },
+    stdin = false,
+  }
+end
+
 
 function M.google_java_format()
     return {
