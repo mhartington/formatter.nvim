@@ -137,7 +137,7 @@ function M.set_lines(bufnr, startLine, endLine, lines)
 end
 
 function M.get_lines(bufnr, startLine, endLine)
-    return vim.api.nvim_buf_get_lines(bufnr, startLine, endLine, true)
+    return vim.api.nvim_buf_get_lines(bufnr, startLine, endLine, false)
 end
 
 function M.fire_event(event, silent)
