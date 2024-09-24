@@ -24,7 +24,7 @@ function M.sqlfluff()
       "-",
     },
     stdin = true,
-    ignore_exitcode = true,
+    ignore_exitcode = false,
   }
 end
 
