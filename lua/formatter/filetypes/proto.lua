@@ -4,7 +4,7 @@ function M.buf_format()
   return {
     exe = "buf format",
     args = {
-      '-w',
+      "-w",
     },
     stdin = false,
   }
