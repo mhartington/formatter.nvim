@@ -116,7 +116,7 @@ function M.start_task(configs, start_line, end_line, opts)
       end
 
       -- Success
-      if ignore_exitcode or data == 0 then
+      if ignore_exitcode or data ~= 0 then
         if current_output == nil then
           current_output = { "" }
         end

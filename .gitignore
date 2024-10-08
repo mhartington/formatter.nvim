@@ -32,4 +32,6 @@ scripts/build/e2e-generated-tsconfig.json
 
 stats.json
 
-
+/luarocks
+/lua_modules
+/.luarocks
