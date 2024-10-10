@@ -135,7 +135,6 @@ function M.start_task(configs, start_line, end_line, opts)
 
     if opts.lock then
       vim.api.nvim_set_option_value("modifiable", false, { buf = bufnr })
-      -- vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
     end
 
     name = current.name
@@ -233,7 +232,6 @@ function M.start_task(configs, start_line, end_line, opts)
     end
 
     if opts.lock then
-      -- vim.api.nvim_buf_set_option(bufnr, "modifiable", true)
       vim.api.nvim_set_option_value("modifiable", true, { buf = bufnr })
     end
 
