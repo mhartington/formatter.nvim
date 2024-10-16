@@ -2,6 +2,7 @@
 *.sw[mnpcod]
 *.log
 *.lock
+!flake.lock
 *.tmp
 *.tmp.*
 log.txt
@@ -32,4 +33,6 @@ scripts/build/e2e-generated-tsconfig.json
 
 stats.json
 
-
+/luarocks
+/lua_modules
+/.luarocks
