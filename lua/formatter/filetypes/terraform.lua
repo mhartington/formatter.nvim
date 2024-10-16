@@ -8,4 +8,12 @@ function M.terraformfmt()
   }
 end
 
+function M.tofufmt()
+  return {
+    exe = "tofu",
+    args = { "fmt", "-" },
+    stdin = true,
+  }
+end
+
 return M
