@@ -1,7 +1,6 @@
 return function()
   return {
-    exe = "alejandra",
+    exe = "stylish-haskell",
     stdin = true,
-    args = { "--quiet" },
   }
 end

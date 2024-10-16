@@ -35,4 +35,16 @@ function M.golines()
   }
 end
 
+-- @param params:table
+function M.goimports_reviser(params)
+  if params == nil or type(params) ~= "table" then
+    params = {}
+  end
+  return {
+    exe = "goimports-reviser",
+    args = params,
+    stdin = false,
+  }
+end
+
 return M

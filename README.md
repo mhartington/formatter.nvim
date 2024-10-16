@@ -102,7 +102,9 @@ require("formatter").setup {
     ["*"] = {
       -- "formatter.filetypes.any" defines default configurations for any
       -- filetype
-      require("formatter.filetypes.any").remove_trailing_whitespace
+      require("formatter.filetypes.any").remove_trailing_whitespace,
+      -- Remove trailing whitespace without 'sed'
+      -- require("formatter.filetypes.any").substitute_trailing_whitespace,
     }
   }
 }

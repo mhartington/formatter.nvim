@@ -16,10 +16,15 @@ function M.autopep8()
 end
 
 function M.isort()
-  local util = require("formatter.util")
+  local util = require "formatter.util"
   return {
     exe = "isort",
-    args = { "-q", "--filename", util.escape_path(util.get_current_buffer_file_path()), "-" },
+    args = {
+      "-q",
+      "--filename",
+      util.escape_path(util.get_current_buffer_file_path()),
+      "-",
+    },
     stdin = true,
   }
 end
@@ -33,10 +38,15 @@ function M.docformatter()
 end
 
 function M.black()
-  local util = require("formatter.util")
+  local util = require "formatter.util"
   return {
     exe = "black",
-    args = { "-q", "--stdin-filename", util.escape_path(util.get_current_buffer_file_name()), "-" },
+    args = {
+      "-q",
+      "--stdin-filename",
+      util.escape_path(util.get_current_buffer_file_name()),
+      "-",
+    },
     stdin = true,
   }
 end
@@ -45,6 +55,21 @@ function M.ruff()
   return {
     exe = "ruff",
     args = { "format", "-q", "-" },
+    stdin = true,
+  }
+end
+
+function M.iruff()
+  return {
+    exe = "ruff",
+    args = {
+      "check",
+      "-q",
+      "--select",
+      "I",
+      "--fix",
+      "-",
+    },
     stdin = true,
   }
 end
