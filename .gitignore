@@ -2,6 +2,7 @@
 *.sw[mnpcod]
 *.log
 *.lock
+!flake.lock
 *.tmp
 *.tmp.*
 log.txt

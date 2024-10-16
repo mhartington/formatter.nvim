@@ -193,7 +193,6 @@ function M.start_task(configs, start_line, end_line, opts)
     end
 
     if current.config.stdin then
-      print("tick", vim.api.nvim_buf_get_changedtick(bufnr))
       local job_id = vim.fn.jobstart(table.concat(cmd, " "), job_options)
       vim.fn.chansend(job_id, output)
       vim.fn.chanclose(job_id, "stdin")
@@ -222,8 +221,6 @@ function M.start_task(configs, start_line, end_line, opts)
   end
 
   function F.done()
-    name = configs.name
-
     if not vim.api.nvim_buf_is_valid(bufnr) then
       log.info "Buffer become invalid while formatting, not applying formatting"
       return
@@ -268,6 +265,7 @@ function M.start_task(configs, start_line, end_line, opts)
 
   local silent = config.values.log_level > vim.log.levels.DEBUG
   util.fire_event("FormatterPre", silent)
+
   F.step()
 end
 
