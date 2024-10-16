@@ -2,11 +2,6 @@ local format = require "formatter.format"
 local config = require "formatter.config"
 local log = require "formatter.log"
 
--- local formatters = config.formatters_for_filetype("js")
-
--- describe("format", function ()
---
--- end)
 describe("start_task", function()
   config.values.log_level = 0
   log.current_format_mods = ""
