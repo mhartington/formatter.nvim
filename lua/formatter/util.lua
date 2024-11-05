@@ -24,6 +24,21 @@ function M.get_current_buffer_file_extension()
   return vim.fn.fnamemodify(M.get_current_buffer_file_path(), ":e")
 end
 
+function M.get_current_buffer_git_remote_url(remote_name)
+    remote_name = remote_name or "origin"
+    local remote_url = vim.fn.system(
+        string.format(
+            "git -C %s config --get remote.%s.url",
+            M.escape_path(M.get_current_buffer_file_dir()),
+            remote_name
+        )
+    )
+    if remote_url == vim.NIL or remote_url == nil or vim.v.shell_error ~= 0 then
+        return ""
+    end
+    return vim.fn.trim(remote_url)
+end
+
 function M.quote_cmd_arg(arg)
   return string.format("'%s'", arg)
 end

@@ -80,6 +80,11 @@ require("formatter").setup {
         if util.get_current_buffer_file_name() == "special.lua" then
           return nil
         end
+        -- Skip formatting for certain repositories. Looks for the "origin" remote by default.
+        -- Remote name can be passed as a parameter.
+        if string.find(util.get_current_buffer_git_remote_url(), "do-not-touch") then
+          return nil
+        end
 
         -- Full specification of configurations is down below and in Vim help
         -- files
