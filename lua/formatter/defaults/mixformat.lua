@@ -8,6 +8,8 @@ return function()
       "--stdin-filename",
       util.escape_path(util.get_current_buffer_file_path()),
       "-",
+      "--stdin-filename",
+      util.escape_path(util.get_current_buffer_file_path()),
     },
     stdin = true,
   }
