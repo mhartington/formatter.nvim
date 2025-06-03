@@ -50,6 +50,30 @@ function M.format(args, mods, start_line, end_line, opts)
   return true
 end
 
+function M.format_as(args, mods, start_line, end_line, opts)
+  local filetype = args
+  local formatters = config.formatters_for_filetype(filetype)
+
+  if util.is_empty(formatters) then
+    log.info(string.format("No formatter defined for %s files", filetype))
+    return
+  end
+
+  local configs = vim.tbl_map(function(config)
+    if type(config) == "table" then
+      return config
+    else
+      return config()
+    end
+  end, formatters)
+
+  local configs_to_run = vim.tbl_map(function(config)
+    return { config = config, name = config.exe }
+  end, configs)
+
+  M.start_task(configs_to_run, start_line - 1, end_line)
+end
+
 function M.start_task(configs, start_line, end_line, opts)
   opts = vim.tbl_deep_extend("keep", opts or {}, {
     lock = false,
